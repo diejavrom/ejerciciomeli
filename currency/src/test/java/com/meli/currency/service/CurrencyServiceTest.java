@@ -2,6 +2,7 @@ package com.meli.currency.service;
 
 import static org.mockito.Mockito.when;
 
+import java.sql.Timestamp;
 import java.util.Collections;
 
 import org.junit.Assert;
@@ -46,8 +47,12 @@ public class CurrencyServiceTest {
 
 	@Test(expected=CurrencyConfigurationNotFoundException.class)
 	public void testWithNonDefaultCurrencyConfigured() {
-        String currency = "ARS";
-		when(currencyRepo.findByDef(true)).thenReturn(null);
+		Double factorConversion = 63d;
+		String currency = "USD";
+		Timestamp now = DateHelper.getInstance().getNow();
+		final CurrencyConversion cc = new CurrencyConversion(now, null, factorConversion, currency, "Dólar", false);
+		when(currencyRepo.findByName(currency)).thenReturn(Collections.singletonList(cc));
+        when(currencyRepo.findByDef(true)).thenReturn(Collections.emptyList());
 		currencyService.convertToCurrencyDefault(currency, 20d);
 	}
 
@@ -66,9 +71,12 @@ public class CurrencyServiceTest {
 		Double amount = 50d;
 		Double factorConversion = 63d;
 		String currency = "USD";
-		final CurrencyConversion cc = new CurrencyConversion(DateHelper.getInstance().getNow(), null, factorConversion, currency, "Dólar", false);
+		Timestamp now = DateHelper.getInstance().getNow();
+		final CurrencyConversion cc = new CurrencyConversion(now, null, factorConversion, currency, "Dólar", false);
+		final CurrencyConversion ccDefault = new CurrencyConversion(now, null, 1d, "ARS", "Peso Argentino", true);
 		when(currencyRepo.findByName(currency)).thenReturn(Collections.singletonList(cc));
-		
+		when(currencyRepo.findByDef(true)).thenReturn(Collections.singletonList(ccDefault));
+
 		Double result = currencyService.convertToCurrencyDefault(currency, amount);
 
 		Assert.assertEquals(result, (Double)(amount*factorConversion));

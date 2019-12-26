@@ -7,6 +7,7 @@ import org.springframework.jms.annotation.EnableJms;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.messaging.Message;
 import org.springframework.stereotype.Component;
+
 import com.google.gson.Gson;
 import com.meli.bill.model.to.ChargeTO;
 import com.meli.bill.service.BillService;
@@ -26,7 +27,7 @@ public class ChargeConsumer {
     @JmsListener(destination = "bill.queue")
     public void listener(final Message<String> message) {
     	String chargeStrRep = message.getPayload();
-    	LOGGER.info("Se recibió un evento de cargo {} " + chargeStrRep);
+    	LOGGER.info("Se recibió un evento de cargo {} ", chargeStrRep);
 		ChargeTO chargeTO = gson.fromJson(chargeStrRep, ChargeTO.class);
     	billService.addChargeToBill(chargeTO);
     }

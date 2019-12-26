@@ -64,7 +64,7 @@ public class BillService {
 		return billRepo.findByUserId(user_id);
 	}
 
-	public void addChargeToBill(ChargeTO chargeTO) {
+	public Bill addChargeToBill(ChargeTO chargeTO) {
 
 		checkChargeParam(chargeTO);
 
@@ -95,7 +95,7 @@ public class BillService {
 		
 		bill.addCharge(charge);
 		
-		billRepo.save(bill);
+		return billRepo.save(bill);
 	}
 
 	private void checkChargeParam(ChargeTO chargeTO) {

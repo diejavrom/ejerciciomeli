@@ -25,6 +25,7 @@ public class Charge {
 	}
 
 	public Charge(ChargeTO chargeTO) {
+		this();
 		setId(chargeTO.getId());
 		setEvent_id(chargeTO.getEvent_id());
 		setUserId(chargeTO.getUserId());
@@ -85,7 +86,7 @@ public class Charge {
 		this.dateObj = dateObj;
 	}
 
-	public List<InfoPayment> getPayments() {
+	private List<InfoPayment> getPayments() {
 		return payments;
 	}
 

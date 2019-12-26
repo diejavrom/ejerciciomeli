@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.meli.charge.api.request.ChargeEvent;
 import com.meli.charge.api.response.TotalChargeInfoResponse;
 import com.meli.charge.api.response.TotalPendingChargeResponse;
 import com.meli.charge.model.Charge;
@@ -26,9 +27,9 @@ public class ChargeRestController {
 	private ChargeService chargeService;
 
     @RequestMapping(value = "/create", method = RequestMethod.POST)
-    public ResponseEntity<Integer> crear(@Valid @RequestBody Charge chargeEvt) {
+    public ResponseEntity<String> crear(@Valid @RequestBody ChargeEvent chargeEvt) {
     	Charge charge = chargeService.createCharge(chargeEvt);
-    	return new ResponseEntity<Integer>(charge.getEvent_id(), HttpStatus.OK);
+    	return new ResponseEntity<String>(charge.getId(), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/list/{user_id}", method = RequestMethod.GET)

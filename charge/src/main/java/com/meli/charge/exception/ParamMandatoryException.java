@@ -1,4 +1,4 @@
-package com.meli.charge.api;
+package com.meli.charge.exception;
 
 public class ParamMandatoryException extends RuntimeException {
 

@@ -36,6 +36,7 @@ public class QueueBillService {
 		LOGGER.info("Encolando mensaje {} en cola de facturas", chargeStr);
 
 		jmsTemplate.convertAndSend(queueBill, chargeStr);
+		
 	}
 
 	@SuppressWarnings("unused")

@@ -7,6 +7,9 @@ import java.util.List;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.meli.charge.DateHelper;
+import com.meli.charge.api.request.ChargeEvent;
+
 @Document(collection = "charges")
 public class Charge {
 
@@ -17,6 +20,7 @@ public class Charge {
 	private Double amount;
 	private Double amountPending;
 	private String event_type;
+	private String category;
 	private String date;
 	private Date dateObj;
 	private String currency;
@@ -24,6 +28,20 @@ public class Charge {
 
 	public Charge() {
 		this.payments = new ArrayList<Payment>();
+	}
+
+	public Charge(ChargeEvent chargeEvt, Double amountInDefCurrency, ChargeType chargeType) {
+		this();
+		setEvent_id(chargeEvt.getEvent_id());
+		setUserId(chargeEvt.getUserId());
+		setOriginalAmount(chargeEvt.getAmount());
+		setAmount(amountInDefCurrency);
+		setAmountPending(amountInDefCurrency);
+		setEvent_type(chargeEvt.getEvent_type());
+		setDate(chargeEvt.getDate());
+		setDateObj(DateHelper.getInstance().stringToTimestamp(chargeEvt.getDate()));
+		setCurrency(chargeEvt.getCurrency());
+		setCategory(chargeType.getCategory());
 	}
 
 	@Id
@@ -55,7 +73,7 @@ public class Charge {
 		return amount;
 	}
 
-	public void setAmount(Double amount) {
+	private void setAmount(Double amount) {
 		this.amount = amount;
 	}
 
@@ -63,7 +81,7 @@ public class Charge {
 		return amountPending;
 	}
 
-	public void setAmountPending(Double amountPending) {
+	private void setAmountPending(Double amountPending) {
 		this.amountPending = amountPending;
 	}
 
@@ -103,7 +121,7 @@ public class Charge {
 		return dateObj;
 	}
 
-	public void setDateObj(Date dateObj) {
+	private void setDateObj(Date dateObj) {
 		this.dateObj = dateObj;
 	}
 
@@ -111,8 +129,16 @@ public class Charge {
 		return originalAmount;
 	}
 
-	public void setOriginalAmount(Double originalAmount) {
+	private void setOriginalAmount(Double originalAmount) {
 		this.originalAmount = originalAmount;
+	}
+
+	public String getCategory() {
+		return category;
+	}
+
+	private void setCategory(String category) {
+		this.category = category;
 	}
 
 	public void payAndRelate(Payment pago, Double amount) {

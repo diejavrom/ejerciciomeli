@@ -52,7 +52,7 @@ public class CurrencyService {
 				return result;
 			}
 		}
-		
+
 	}
 
 	private CurrencyConversion getCurrencyDefault(Timestamp now) {

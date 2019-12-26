@@ -52,7 +52,7 @@ public class StatusServiceTest {
 		when(chargeService.getTotalCharge(userId)).thenReturn(totalChargeInfoTO);
 
 		StatusUsuarioResponse status = statusService.getStatus(userId);
-		Assert.assertEquals(status.getDebt(), (Double)(amountCharge - amountPayment));
+		Assert.assertEquals(status.getDebt(), (Double)(amountPayment - amountCharge));
 	}
 
 	@Test(expected = ParamMandatoryException.class)

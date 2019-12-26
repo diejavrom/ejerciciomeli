@@ -11,14 +11,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.meli.charge.DateHelper;
-import com.meli.charge.api.ParamMandatoryException;
+import com.meli.charge.api.request.ChargeEvent;
 import com.meli.charge.api.response.TotalChargeInfoResponse;
 import com.meli.charge.api.response.TotalPendingChargeResponse;
 import com.meli.charge.exception.ChargeAlreadyProcessedException;
 import com.meli.charge.exception.ChargeOutOfDateException;
+import com.meli.charge.exception.ChargeTypeException;
+import com.meli.charge.exception.ParamMandatoryException;
 import com.meli.charge.model.Charge;
+import com.meli.charge.model.ChargeType;
 import com.meli.charge.model.Payment;
 import com.meli.charge.repository.ChargeRepository;
+import com.meli.charge.repository.ChargeTypeRepository;
 
 @Service
 public class ChargeService {
@@ -32,32 +36,31 @@ public class ChargeService {
 	private CurrencyService currencyService;
 
 	@Autowired
-	private QueueBillService queueService;
+	private ChargeTypeRepository chargeTypeRepo;
 
-	public Charge createCharge(Charge charge) {
+	@Autowired
+	private QueueBillService queueBillService;
 
-		LOGGER.info("Procesando cargo para el usuario -> {},  event_id -> {}, currency -> {}, amount -> {} ");
+	public Charge createCharge(ChargeEvent chargeEvt) {
 
-		checkEventCharge(charge);
+		LOGGER.info("Procesando cargo para el usuario -> {},  event_id -> {}, currency -> {}, amount -> {} ", chargeEvt.getUserId(), chargeEvt.getEvent_id(), chargeEvt.getCurrency(), chargeEvt.getAmount());
 
-		checkChargeOutOfDate(charge);
+		checkEventCharge(chargeEvt);
+
+		checkEventChargeOutOfDate(chargeEvt);
 	
-		Double amountEvt = charge.getAmount();
-		Double amountInDefCurrency = currencyService.convertToCurrencyDefault(charge.getCurrency(), amountEvt);
+		Double amountInDefCurrency = currencyService.convertToCurrencyDefault(chargeEvt.getCurrency(), chargeEvt.getAmount());
 
-		charge.setDateObj(DateHelper.getInstance().stringToTimestamp(charge.getDate()));
-		charge.setAmount(amountInDefCurrency);
-		charge.setAmountPending(amountInDefCurrency);
-		charge.setOriginalAmount(amountEvt);
+		Charge charge = new Charge(chargeEvt, amountInDefCurrency, getChargeType(chargeEvt.getEvent_type()));
+
 		Charge chargePersisted = chargeRepo.insert(charge);
 
-		queueService.enqueueCharge(chargePersisted, null, null);
+		queueBillService.enqueueCharge(chargePersisted, null, null);
 
-		//TODO: Resolver el tema de tipo de evento
 		return chargePersisted;
 	}
 
-	private void checkEventCharge(Charge evento) {
+	private void checkEventCharge(ChargeEvent evento) {
 		if(evento == null) {
 			throw new ParamMandatoryException("evento no puede ser null");
 		}
@@ -84,11 +87,7 @@ public class ChargeService {
 		}
 	}
 
-	public void processPayment(Payment payment) {
-		
-	}
-
-	private void checkChargeOutOfDate(Charge evento) {
+	private void checkEventChargeOutOfDate(ChargeEvent evento) {
 		Timestamp dateEvento = DateHelper.getInstance().stringToTimestamp(evento.getDate());
 		Timestamp now = DateHelper.getInstance().getNow();
 		Integer mesEvt = DateHelper.getInstance().getMonth(dateEvento);
@@ -119,7 +118,7 @@ public class ChargeService {
 				chargeListToPersist.add(charge);
 
 				chargeRepo.save(charge);
-				queueService.enqueueCharge(charge, payment, amountToUSe);
+				queueBillService.enqueueCharge(charge, payment, amountToUSe);
 			}
 		}
 
@@ -143,6 +142,17 @@ public class ChargeService {
 			totalCharge = allCharge.stream().map(c -> c.getAmountPending()).reduce(0d, (ap1 , ap2) -> ap1 + ap2).doubleValue();
 		}
 		return new TotalPendingChargeResponse(user_id, totalCharge);
+	}
+
+	private ChargeType getChargeType(String type) {
+		List<ChargeType> chargeType = chargeTypeRepo.findByType(type);
+		if(chargeType.isEmpty()) {
+			throw new ChargeTypeException(String.format("No se pudo encontrar un tipo de cargo asociado a %s", type)); 
+		} else if(chargeType.size() > 1){
+			throw new ChargeTypeException(String.format("Existe más de un tipo de cargo configurado para %s", type)); 
+		} else {
+			return chargeType.iterator().next();
+		}
 	}
 
 }

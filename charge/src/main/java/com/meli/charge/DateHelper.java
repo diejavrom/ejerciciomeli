@@ -7,7 +7,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 
-import com.meli.charge.api.ParamMandatoryException;
+import com.meli.charge.exception.ParamMandatoryException;
 
 public class DateHelper {
 
