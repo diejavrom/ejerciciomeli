@@ -19,11 +19,15 @@ public class PaymentService {
 
 	@Autowired
 	private Environment env;
+	
+	@Autowired
+	private RestTemplate restTemplate;
 
 	public TotalPaymentInfoTO getTotalPayment(Integer userId) {
-		String urlPaymentAPI = env.getProperty(URL_PAYMENT_SERVICE) + "/total/" + userId;
+		String urlPaymentAPI = String.format("%s/total/%d", env.getProperty(URL_PAYMENT_SERVICE), userId) ;
+
 		LOGGER.info("Invocando API {}", urlPaymentAPI);
-		RestTemplate restTemplate = new RestTemplate();
+
 		ResponseEntity<TotalPaymentInfoTO> forEntity = restTemplate.getForEntity(urlPaymentAPI, TotalPaymentInfoTO.class);
 		return forEntity.getBody();
 	}

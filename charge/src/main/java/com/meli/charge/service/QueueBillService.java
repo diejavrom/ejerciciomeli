@@ -5,6 +5,8 @@ import java.util.Date;
 
 import javax.jms.Queue;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
@@ -16,19 +18,24 @@ import com.meli.charge.model.Payment;
 @Service
 public class QueueBillService {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(CurrencyService.class);
+	
 	@Autowired
-	private Queue queueCharge;
+	private Queue queueBill;
 
 	@Autowired
 	private Gson gson;
 
 	@Autowired
 	private JmsTemplate jmsTemplate;
-
+	
 	public void enqueueCharge(Charge charge, Payment payment, Double amountToUSe) {
 		ChargeTO chargeTO = new ChargeTO(charge, payment, amountToUSe);
 		String chargeStr = gson.toJson(chargeTO);
-		jmsTemplate.convertAndSend(queueCharge, chargeStr);
+	
+		LOGGER.info("Encolando mensaje {} en cola de facturas", chargeStr);
+
+		jmsTemplate.convertAndSend(queueBill, chargeStr);
 	}
 
 	@SuppressWarnings("unused")

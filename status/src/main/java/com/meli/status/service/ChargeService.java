@@ -14,18 +14,20 @@ import com.meli.status.model.TotalChargeInfoTO;
 public class ChargeService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ChargeService.class);
-	
+
 	private static final String URL_CHARGE_SERVICE = "charge.api.url";
 
 	@Autowired
 	private Environment env;
 
+	@Autowired
+	private RestTemplate restTemplate;
+
 	public TotalChargeInfoTO getTotalCharge(Integer userId) {
-		String urlChargeAPI = env.getProperty(URL_CHARGE_SERVICE) + "/total/" + userId;
+		String urlChargeAPI = String.format("%s/total/%d", env.getProperty(URL_CHARGE_SERVICE), userId);
 
 		LOGGER.info("Invocando API {} ", urlChargeAPI);
-		
-		RestTemplate restTemplate = new RestTemplate();
+
 		ResponseEntity<TotalChargeInfoTO> forEntity = restTemplate.getForEntity(urlChargeAPI, TotalChargeInfoTO.class);
 		return forEntity.getBody();
 	}
