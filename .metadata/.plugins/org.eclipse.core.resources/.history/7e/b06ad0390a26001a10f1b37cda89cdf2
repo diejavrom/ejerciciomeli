@@ -1,0 +1,11 @@
+package com.ml.cobranzasmeli.exception;
+
+public class CargoFueraDeTerminoException extends RuntimeException {
+
+	private static final long serialVersionUID = 2357968387144669930L;
+
+	public CargoFueraDeTerminoException(String msg) {
+		super(msg);
+	}
+
+}

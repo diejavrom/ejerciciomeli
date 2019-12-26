@@ -1,0 +1,10 @@
+package com.meli.charge.listener;
+
+import org.springframework.jms.annotation.EnableJms;
+import org.springframework.stereotype.Component;
+
+@Component
+@EnableJms
+public class PaymentConsumer {
+
+}

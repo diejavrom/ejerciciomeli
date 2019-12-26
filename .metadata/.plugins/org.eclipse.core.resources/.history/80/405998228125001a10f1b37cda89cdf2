@@ -1,0 +1,16 @@
+version: "3"
+services:
+  payment:
+    image: testdjr.azurecr.io/meli/payment:0.0.1
+    ports:
+      - "8080:8080"
+    networks:
+      - meli-app-network
+    links:
+      - "activemqcontainer:activemqcontainer"
+  activemqcontainer:
+    image: "webcenter/activemq:5.15.2"
+    ports:
+    - "61616:61616"
+networks:
+  meli-app-network:

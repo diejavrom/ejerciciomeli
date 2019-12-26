@@ -1,0 +1,21 @@
+package com.meli.currency;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.meli.currency.model.CurrencyConversion;
+import com.meli.currency.repository.CurrencyConversionRepository;
+
+@Service
+public class CurrencyService {
+
+	@Autowired
+	private CurrencyConversionRepository currencyRepo;
+	
+	public Double convertToCurrencyDefault(String name, Double amount) {
+		List<CurrencyConversion> currency = currencyRepo.findByName(name);
+	}
+
+}

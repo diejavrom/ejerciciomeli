@@ -1,0 +1,13 @@
+package com.meli.charge.repository;
+
+import java.util.List;
+
+import org.springframework.data.mongodb.repository.MongoRepository;
+import com.meli.charge.model.Bill;
+
+public interface BillRepository extends MongoRepository<Bill, Integer> {
+	
+	
+	public List<Bill> findByUserMonthYear(Integer userId, Integer month, Integer year);
+	
+}

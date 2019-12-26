@@ -1,0 +1,8 @@
+package com.meli.charge.api.response;
+
+public class TotalDebtResponse {
+
+	private Integer userId;
+	private Double totalDebt;
+
+}

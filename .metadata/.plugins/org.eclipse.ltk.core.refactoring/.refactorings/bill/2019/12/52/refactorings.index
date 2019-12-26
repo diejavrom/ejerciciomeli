@@ -1,0 +1,14 @@
+1577318439546	Rename type 'PaymentConsumer'
+1577318452541	Rename field 'chargeService'
+1577318491683	Copy compilation unit
+1577318499613	Rename type 'Charge'
+1577318626191	Rename local variable 'payment'
+1577318630693	Rename local variable 'paymentStrRep'
+1577318771129	Rename local variable 'payment'
+1577318868228	Extract local variable 'userId'
+1577319113018	Rename local variable 'id2'
+1577321473323	Extract local variable 'chargeById'
+1577321513821	Rename local variable 'chargeById'
+1577321536446	Extract local variable 'existsChargeWithPayment'
+1577325498498	Rename type 'ChargeResponseEntityExceptionHandler'
+1577325729119	Copy compilation unit

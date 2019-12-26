@@ -1,0 +1,15 @@
+package com.meli.charge;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.meli.charge.repository.BillRepository;
+
+@Service
+public class BillService {
+
+	@Autowired
+	private BillRepository billRepo;
+	
+	public Bil getCurrentBuild(Integer, )
+}

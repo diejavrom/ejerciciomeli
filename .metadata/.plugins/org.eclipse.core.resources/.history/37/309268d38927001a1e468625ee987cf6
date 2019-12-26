@@ -1,0 +1,37 @@
+package com.meli.currency.service;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+
+import com.meli.currency.exception.CurrencyConfigurationNotFoundException;
+import com.meli.currency.repository.CurrencyConversionRepository;
+
+@RunWith(MockitoJUnitRunner.class)
+@ContextConfiguration(classes = CurrencyService.class)
+public class CurrencyServiceTest {
+
+	@Autowired
+	@InjectMocks
+	private CurrencyService currencyService;
+
+	@Mock
+	private CurrencyConversionRepository currencyRepo;
+
+	@Before
+    public void setup() {
+        MockitoAnnotations.initMocks(this);
+    }
+
+	@Test(expected=CurrencyConfigurationNotFoundException.class)
+	public void testWithNonDefaultCurrencyConfigured() {
+		
+	}
+
+}

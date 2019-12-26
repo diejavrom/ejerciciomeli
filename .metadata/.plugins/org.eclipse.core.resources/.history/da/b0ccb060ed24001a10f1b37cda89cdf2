@@ -1,0 +1,34 @@
+package com.meli.charge.model;
+
+public class Payment {
+
+	private String id;
+	private Double amount;
+	private String currency;
+	private Double amountUsedInCharge;
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public Double getAmount() {
+		return amount;
+	}
+
+	public void setAmount(Double amount) {
+		this.amount = amount;
+	}
+
+	public Double getAmountUsedInCharge() {
+		return amountUsedInCharge;
+	}
+
+	public void setAmountUsedInCharge(Double amountUsedInCharge) {
+		this.amountUsedInCharge = amountUsedInCharge;
+	}
+
+}

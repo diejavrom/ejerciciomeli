@@ -1,0 +1,59 @@
+package com.meli.currency.service;
+
+import java.sql.Timestamp;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.meli.currency.DateHelper;
+import com.meli.currency.exception.CurrencyConfigurationNotFoundException;
+import com.meli.currency.exception.ParamMandatoryException;
+import com.meli.currency.model.CurrencyConversion;
+import com.meli.currency.repository.CurrencyConversionRepository;
+
+
+@Service
+public class CurrencyService {
+
+	@Autowired
+	private CurrencyConversionRepository currencyRepo;
+
+	public Double convertToCurrencyDefault(String name, Double amount) {
+		if(name == null || name.trim().isEmpty()) {
+			throw new ParamMandatoryException("name no puede ser null");
+		}
+		if(amount == null || amount < 0) {
+			throw new ParamMandatoryException("amount no puede ser null ni negativo");
+		}
+
+		Timestamp now = DateHelper.getInstance().getNow();
+		List<CurrencyConversion> allDefaults = currencyRepo.findByDefault();
+		CurrencyConversion ccDefault = null;
+		for(CurrencyConversion cc : allDefaults) {
+			if(cc.isBetween(now)) {
+				ccDefault = cc;
+				break;
+			}
+		}
+		if(ccDefault == null) {
+			throw new CurrencyConfigurationNotFoundException("No se encontró una configuración default vigente");
+		}
+		if(ccDefault.getName().equals(name)) {
+			return amount;
+		} else {
+			List<CurrencyConversion> currencyConversionList = currencyRepo.findByName(name);
+			if(currencyConversionList.isEmpty()) {
+				throw new CurrencyConfigurationNotFoundException(String.format("No se encontró una configuración para el currency '%s'", name));
+			}
+
+			for(CurrencyConversion cc : currencyConversionList) {
+				if(cc.isBetween(now)) {
+					return cc.convert(amount);
+				}
+			}
+			return null;
+		}
+	}
+
+}

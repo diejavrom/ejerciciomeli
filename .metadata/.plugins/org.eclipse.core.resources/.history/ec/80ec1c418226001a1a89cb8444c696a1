@@ -1,0 +1,13 @@
+package com.meli.charge.repository;
+
+import java.util.List;
+
+import org.springframework.data.mongodb.repository.MongoRepository;
+
+import com.meli.charge.model.Charge;
+
+public interface ChargeRepository extends MongoRepository<Charge, Integer> {
+
+	public List<Charge> findByUserId(Integer userId);
+
+}

@@ -1,0 +1,39 @@
+1577076219472	Rename resource 'docker-compose.yaml'
+1577107781425	Extract local variable 'message'
+1577107932838	Copy file
+1577162228338	Copy compilation units
+1577162261795	Copy compilation unit
+1577212555487	Extract local variable 'gsonJsonParser'
+1577212829123	Extract local variable 'paymentStr'
+1577219958783	Extract local variable 'urlChargePayment'
+1577220150231	Rename package 'com.meli.payment.model.response'
+1577220178934	Rename type 'TotalDebtResponse'
+1577220195975	Extract local variable 'forEntity'
+1577220212550	Extract local variable 'totalDebt'
+1577220479481	Copy compilation unit
+1577301033426	Rename type 'TotalDebtResponse'
+1577301043691	Rename local variable 'totalDebt'
+1577301048969	Rename field 'totalDebt'
+1577301056525	Rename method 'setTotalDebt'
+1577301062317	Rename method 'getTotalDebt'
+1577301067624	Rename local variable 'totalDebt'
+1577301154908	Rename local variable 'allCharge'
+1577307405356	Extract local variable 'amountInCurrencyDefault'
+1577307438196	Extract local variable 'originalAmount'
+1577307772640	Copy compilation unit
+1577307793749	Rename field 'URL_CURRENCY_SERVICE'
+1577307831912	Rename local variable 'urlChargePayment'
+1577307908465	Rename method 'convertToCurrencyDefault'
+1577307990006	Rename local variable 'toalDebt'
+1577308066523	Extract method 'checkDebtTotal'
+1577308921095	Rename method 'handlePaymentExceedsTotalDebtException'
+1577311632206	Rename local variable 'lastCharge'
+1577311771338	Rename local variable 'totalDebt'
+1577311846257	Rename method 'totalPayment'
+1577311985850	Copy compilation unit
+1577312189349	Copy compilation unit
+1577314677067	Rename field 'totalDebt'
+1577314684847	Rename local variable 'totalDebt'
+1577314746462	Rename method 'getTotalDebt'
+1577320079292	Copy compilation unit
+1577320701751	Copy compilation unit

@@ -1,0 +1,97 @@
+package com.meli.currency;
+
+import java.sql.Timestamp;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
+import org.springframework.stereotype.Component;
+import com.ml.cobranzasmeli.model.Currency;
+import com.ml.cobranzasmeli.model.CurrencyConversion;
+import com.ml.cobranzasmeli.model.TipoCargo;
+import com.ml.cobranzasmeli.repository.CurrencyConversionRepository;
+import com.ml.cobranzasmeli.repository.TipoCargoRepository;
+
+@Component
+public class CurrencyConversionLoader implements ApplicationRunner {
+
+	@Autowired
+	private CurrencyConversionRepository currencyConversionRepo;
+
+	@Override
+	public void run(ApplicationArguments args) throws Exception {
+		//currency conversion
+		Timestamp now = DateHelper.getInstance().getNow();
+
+		//USD
+		CurrencyConversion cc = new CurrencyConversion();
+
+		Currency currency = new Currency();
+		currency.setDescription("Dólar");
+		currency.setName("USD");
+		currency.setPredeterminado(false);
+
+		cc.setCurrency(currency);
+		cc.setConversionfactor(60d);
+		cc.setSince(now);
+
+		currencyConversionRepo.save(cc);
+
+		//ARS
+		cc = new CurrencyConversion();
+
+		currency = new Currency();
+		currency.setDescription("Peso argentino");
+		currency.setName("ARS");
+		currency.setPredeterminado(true);
+
+		cc.setCurrency(currency);
+		cc.setConversionfactor(1d);
+		cc.setSince(now);
+
+		currencyConversionRepo.save(cc);
+
+		//tipos de cargo
+		TipoCargo tp = new TipoCargo();
+		tp.setNombre("CLASIFICADO");
+		tp.setCategoria("MARKETPLACE");
+		tipoCargoRepo.save(tp);
+
+		tp = new TipoCargo();
+		tp.setNombre("VENTA");
+		tp.setCategoria("MARKETPLACE");
+		tipoCargoRepo.save(tp);
+
+		tp = new TipoCargo();
+		tp.setNombre("ENVÍO");
+		tp.setCategoria("MARKETPLACE");
+		tipoCargoRepo.save(tp);
+
+		tp = new TipoCargo();
+		tp.setNombre("CRÉDITO");
+		tp.setCategoria("SERVICIOS");
+		tipoCargoRepo.save(tp);
+
+		tp = new TipoCargo();
+		tp.setNombre("FIDELIDAD");
+		tp.setCategoria("SERVICIOS");
+		tipoCargoRepo.save(tp);
+
+		tp = new TipoCargo();
+		tp.setNombre("PUBLICIDAD");
+		tp.setCategoria("SERVICIOS");
+		tipoCargoRepo.save(tp);
+
+		tp = new TipoCargo();
+		tp.setNombre("MERCADOSHOP");
+		tp.setCategoria("EXTERNO");
+		tipoCargoRepo.save(tp);
+
+		tp = new TipoCargo();
+		tp.setNombre("MERCADOPAGO");
+		tp.setCategoria("EXTERNO");
+		tipoCargoRepo.save(tp);
+
+	}
+
+}

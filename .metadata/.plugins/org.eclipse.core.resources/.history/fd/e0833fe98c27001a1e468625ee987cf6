@@ -1,0 +1,18 @@
+package com.meli.currency.api;
+
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+
+@RunWith(MockitoJUnitRunner.class)
+@ContextConfiguration(classes = CurrencyRestController.class)
+public class CurrencyConversionRestTest {
+
+	@Autowired
+    @InjectMocks
+    private CurrencyRestController currencyRest;
+
+
+}

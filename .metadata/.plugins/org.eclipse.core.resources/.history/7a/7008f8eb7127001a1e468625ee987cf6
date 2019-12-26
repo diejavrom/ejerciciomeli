@@ -1,0 +1,36 @@
+package com.meli.bill.model;
+
+import org.springframework.data.mongodb.core.mapping.Document;
+
+@Document(collection = "infopayment")
+public class InfoPayment {
+
+	private String id;
+	private Double amount;
+
+	public InfoPayment() {
+	}
+
+	public InfoPayment(String id, Double amount) {
+		super();
+		this.id = id;
+		this.amount = amount;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public Double getAmount() {
+		return amount;
+	}
+
+	public void setAmount(Double amount) {
+		this.amount = amount;
+	}
+
+}

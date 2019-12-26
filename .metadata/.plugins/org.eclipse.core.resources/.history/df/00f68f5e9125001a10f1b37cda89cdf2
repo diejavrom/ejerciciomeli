@@ -1,0 +1,8 @@
+server.port=8180
+
+spring.mongodb.embedded.version=3.2.22
+
+spring.activemq.close-timeout=15000
+spring.activemq.broker-url=tcp://activemqcontainer:61616
+spring.activemq.password=admin
+spring.activemq.user=admin

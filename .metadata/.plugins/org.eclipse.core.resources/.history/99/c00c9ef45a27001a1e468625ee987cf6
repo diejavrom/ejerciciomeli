@@ -1,0 +1,5 @@
+package com.meli.payment.service;
+
+public class QueueChargeService {
+
+}

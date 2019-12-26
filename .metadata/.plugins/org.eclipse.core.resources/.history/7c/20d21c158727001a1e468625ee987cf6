@@ -1,0 +1,12 @@
+package com.meli.currency.model;
+
+import org.junit.Test;
+
+public class CurrencyConversionTest {
+
+	@Test
+	public void testConvertWithNullParam() {
+		
+	}
+
+}

@@ -1,0 +1,5 @@
+package com.meli.currency;
+
+public class CurrencyService {
+
+}

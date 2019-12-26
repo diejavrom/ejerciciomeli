@@ -1,0 +1,8 @@
+package com.meli.charge.model;
+
+public class Payment {
+
+	private String id;
+	private Double amount;
+	
+}

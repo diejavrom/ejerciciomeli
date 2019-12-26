@@ -1,0 +1,16 @@
+package com.meli.currency;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+@Service
+public class CurrencyService {
+
+	@Autowired
+	private CurrencyConversionRepository currencyRepo;
+	
+	public Double convertToCurrencyDefault(String name, Double amount) {
+		
+	}
+
+}

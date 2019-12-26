@@ -1,0 +1,3 @@
+spring.activemq.broker-url=vm://embedded
+spring.activemq.password=admin
+spring.activemq.user=admin

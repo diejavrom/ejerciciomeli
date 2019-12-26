@@ -1,0 +1,5 @@
+package com.meli.bill.model;
+
+public class InfoPayment {
+
+}

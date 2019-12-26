@@ -1,0 +1,127 @@
+package com.meli.charge;
+
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.meli.charge.api.ParamMandatoryException;
+import com.meli.charge.exception.ChargeAlreadyProcessedException;
+import com.meli.charge.exception.ChargeOutOfDateException;
+import com.meli.charge.model.Bill;
+import com.meli.charge.model.Charge;
+import com.meli.charge.model.Payment;
+import com.meli.charge.repository.ChargeRepository;
+
+@Service
+public class ChargeService {
+
+	@Autowired
+	private ChargeRepository chargeRepo;
+
+	@Autowired
+	private BillService billService;
+
+	public Charge createCharge(Charge charge) {
+
+		checkEventCharge(charge);
+
+		checkChargeOutOfDate(charge);
+
+		charge.setDateObj(DateHelper.getInstance().stringToTimestamp(charge.getDate()));
+		charge.setAmountPending(charge.getAmount());
+		Charge chargePersisted = chargeRepo.insert(charge);
+
+		updateChargeInBill(chargePersisted);
+
+		//TODO: Resolver el tema de tipo de evento
+		//TODO: Resolver el tema de currency
+		return chargePersisted;
+	}
+
+	private void updateChargeInBill(Charge charge) {
+		Timestamp now = DateHelper.getInstance().getNow();
+		Integer month = DateHelper.getInstance().getMonth(now);
+		Integer year = DateHelper.getInstance().getYear(now);
+		Bill bill = billService.getBillByUserMonthYear(charge.getUserId(), month, year);
+		if(bill == null) {
+			bill = new Bill(charge.getUserId(), month, year);
+		}
+		bill.addCharge(charge);
+		billService.save(bill);
+	}
+
+	private void checkEventCharge(Charge evento) {
+		if(evento == null) {
+			throw new ParamMandatoryException("evento no puede ser null");
+		}
+		if(evento.getEvent_id() == null) {
+			throw new ParamMandatoryException("event_id no puede ser null");
+		}
+		if(evento.getUserId() == null) {
+			throw new ParamMandatoryException("user_id no puede ser null");
+		}
+		if(evento.getEvent_type() == null || evento.getEvent_type().trim().isEmpty()) {
+			throw new ParamMandatoryException("event_type no puede ser null");
+		}
+		if(evento.getCurrency() == null || evento.getCurrency().trim().isEmpty()) {
+			throw new ParamMandatoryException("currency no puede ser null o vacío");
+		}
+		if(evento.getAmount() == null || evento.getAmount() <= 0) {
+			throw new ParamMandatoryException("amount no puede ser null o vacío");
+		}
+		if(evento.getDate() == null || evento.getDate().trim().isEmpty()) {
+			throw new ParamMandatoryException("date no puede ser vacío");
+		}
+		if(chargeRepo.existsById(evento.getEvent_id())) {
+			throw new ChargeAlreadyProcessedException(String.format("El evento de cargo con ID '%d' ya fue procesado anteriormente", evento.getEvent_id()));
+		}
+	}
+
+	public void processPayment(Payment payment) {
+		
+	}
+
+	private void checkChargeOutOfDate(Charge evento) {
+		Timestamp dateEvento = DateHelper.getInstance().stringToTimestamp(evento.getDate());
+		Timestamp now = DateHelper.getInstance().getNow();
+		Integer mesEvt = DateHelper.getInstance().getMonth(dateEvento);
+		Integer anioEvt = DateHelper.getInstance().getYear(dateEvento);
+		Integer mesAct = DateHelper.getInstance().getMonth(now);
+		Integer anioAct = DateHelper.getInstance().getYear(now);
+		if(!mesEvt.equals(mesAct) || !anioEvt.equals(anioAct)) {
+			throw new ChargeOutOfDateException(String.format("El cargo no corresponde al mes en curso: '%s'", evento.getDate()));
+		} else if(now.before(dateEvento)) {
+			throw new ChargeOutOfDateException(String.format("El cargo tiene una fecha futura: '%s'", evento.getDate()));
+		}
+	}
+
+	public List<Charge> listByUserId(Integer user_id) {
+		return chargeRepo.findByUserId(user_id);
+	}
+
+	public void payChargesWithPayment(Payment payment) {
+		//TODO: Chequear la deuda del usuario
+		List<Charge> chargeWithDebt = chargeRepo.findAllWithDebt(payment.getUserId());
+		List<Charge> chargeListToPersist = new ArrayList<Charge>();
+		Double pagoAmount = payment.getAmount();
+		for(Charge charge : chargeWithDebt) {
+			if(pagoAmount > 0) {
+				Double amountToUSe = Math.min(pagoAmount, charge.getAmountPending());
+				pagoAmount = pagoAmount - amountToUSe;
+				charge.payAndRelate(payment, amountToUSe);
+				chargeListToPersist.add(charge);
+				updateChargeInBill(charge);
+			}
+		}
+		
+		
+		chargeRepo.saveAll(chargeListToPersist);
+	}
+
+	public List<Charge> findAllWithDebt(Integer userId) {
+		return chargeRepo.findAllWithDebt(userId);
+	}
+}

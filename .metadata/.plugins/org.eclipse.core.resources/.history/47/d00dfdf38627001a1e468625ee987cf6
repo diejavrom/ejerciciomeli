@@ -1,0 +1,9 @@
+package com.meli.currency.model;
+
+public class CurrencyConversionTest {
+
+	public void testConvertWithNullParam() {
+		
+	}
+
+}

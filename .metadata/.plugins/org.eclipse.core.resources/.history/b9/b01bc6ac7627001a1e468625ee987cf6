@@ -1,0 +1,30 @@
+package com.meli.charge.service;
+
+import javax.jms.Queue;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jms.core.JmsTemplate;
+import org.springframework.stereotype.Service;
+
+import com.google.gson.Gson;
+import com.meli.charge.model.Charge;
+
+@Service
+public class QueueBillService {
+
+	@Autowired
+	private Queue queueCharge;
+
+	@Autowired
+	private Gson gson;
+
+	@Autowired
+	private JmsTemplate jmsTemplate;
+
+	public void enqueueCharge(Charge payment) {
+		
+		String paymentStr = gson.toJson(payment);
+		jmsTemplate.convertAndSend(queueCharge, paymentStr);
+	}
+
+}

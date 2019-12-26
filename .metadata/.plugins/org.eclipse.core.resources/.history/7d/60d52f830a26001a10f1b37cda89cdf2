@@ -1,0 +1,77 @@
+package com.meli.charge;
+
+import java.sql.Timestamp;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.meli.charge.api.ParamMandatoryException;
+import com.meli.charge.exception.ChargeAlreadyProcessedException;
+import com.meli.charge.exception.ChargeOutOfDateException;
+import com.meli.charge.model.Charge;
+import com.meli.charge.repository.ChargeRepository;
+
+@Service
+public class ChargeService {
+
+	@Autowired
+	private ChargeRepository chargeRepo;
+
+	public Charge createCharge(Charge charge) {
+		checkEventCharge(charge);
+
+		checkChargeOutOfDate(charge);
+		
+		Charge chargePersisted = chargeRepo.insert(charge);
+		//TODO: Resolver el tema de currency
+		//TODO: notificar en la cola de factura
+		return chargePersisted;
+	}
+
+	private void checkEventCharge(Charge evento) {
+		if(evento == null) {
+			throw new ParamMandatoryException("evento no puede ser null");
+		}
+		if(evento.getEvent_id() == null) {
+			throw new ParamMandatoryException("event_id no puede ser null");
+		}
+		if(evento.getUserId() == null) {
+			throw new ParamMandatoryException("user_id no puede ser null");
+		}
+		if(evento.getEvent_type() == null || evento.getEvent_type().trim().isEmpty()) {
+			throw new ParamMandatoryException("event_type no puede ser null");
+		}
+		if(evento.getCurrency() == null || evento.getCurrency().trim().isEmpty()) {
+			throw new ParamMandatoryException("currency no puede ser null o vacío");
+		}
+		if(evento.getAmount() == null || evento.getAmount() <= 0) {
+			throw new ParamMandatoryException("amount no puede ser null o vacío");
+		}
+		if(evento.getDate() == null || evento.getDate().trim().isEmpty()) {
+			throw new ParamMandatoryException("date no puede ser vacío");
+		}
+		if(chargeRepo.existsById(evento.getEvent_id())) {
+			throw new ChargeAlreadyProcessedException(String.format("El evento de cargo con ID '%d' ya fue procesado anteriormente", evento.getEvent_id()));
+		}
+	}
+
+	private void checkChargeOutOfDate(Charge evento) {
+		Timestamp dateEvento = DateHelper.getInstance().stringToTimestamp(evento.getDate());
+		Timestamp now = DateHelper.getInstance().getNow();
+		Integer mesEvt = DateHelper.getInstance().getMes(dateEvento);
+		Integer anioEvt = DateHelper.getInstance().getAnio(dateEvento);
+		Integer mesAct = DateHelper.getInstance().getMes(now);
+		Integer anioAct = DateHelper.getInstance().getAnio(now);
+		if(!mesEvt.equals(mesAct) || !anioEvt.equals(anioAct)) {
+			throw new ChargeOutOfDateException(String.format("El cargo no corresponde al mes en curso: '%s'", evento.getDate()));
+		} else if(now.before(dateEvento)) {
+			throw new ChargeOutOfDateException(String.format("El cargo tiene una fecha futura: '%s'", evento.getDate()));
+		}
+	}
+
+	public List<Charge> listByUserId(Integer user_id) {
+		return chargeRepo.findByUserId(user_id);
+	}
+
+}

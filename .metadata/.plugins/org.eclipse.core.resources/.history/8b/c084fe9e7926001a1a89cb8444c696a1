@@ -1,0 +1,9 @@
+package com.meli.charge.repository;
+
+import org.springframework.data.mongodb.repository.MongoRepository;
+
+import com.meli.charge.model.Bill;
+	
+public interface BillRepository extends MongoRepository<Bill, Integer> {
+	
+}

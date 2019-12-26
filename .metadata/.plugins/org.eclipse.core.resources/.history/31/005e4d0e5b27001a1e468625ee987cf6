@@ -1,0 +1,17 @@
+package com.meli.payment.service;
+
+import javax.jms.Queue;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+
+
+@Service
+public class QueueChargeService {
+
+	@Autowired
+	private Queue queueCharge;
+
+
+}

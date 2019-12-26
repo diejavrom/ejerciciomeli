@@ -1,0 +1,32 @@
+package com.meli.bill.model;
+
+public class InfoPayment {
+
+	public InfoPayment(String id, Double amount) {
+		super();
+		this.id = id;
+		this.amount = amount;
+	}
+	
+	public InfoPayment() {
+		
+	}
+	private String id;
+	private Double amount;
+	
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public Double getAmount() {
+		return amount;
+	}
+
+	public void setAmount(Double amount) {
+		this.amount = amount;
+	}
+}

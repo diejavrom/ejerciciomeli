@@ -1,0 +1,117 @@
+1577162290123	Rename type 'PaymentResponseEntityExceptionHandler'
+1577162299445	Rename type 'PaymentAlreadyProcessedException'
+1577163494973	Rename method 'checkEvento'
+1577163595007	Rename type 'CargoFueraDeTerminoException'
+1577163645613	Rename method 'checkCargoEnTermino'
+1577206530094	Rename type 'Factura'
+1577206670100	Rename local variable 'cargos'
+1577206676409	Rename field 'cargos'
+1577206697740	Rename local variable 'mes'
+1577206703787	Rename local variable 'anio'
+1577208383164	Rename method 'addCargo'
+1577208390908	Rename local variable 'cargo'
+1577208399451	Rename local variable 'anio'
+1577208405631	Rename method 'setAnio'
+1577208412538	Rename method 'getAnio'
+1577208418113	Rename field 'anio'
+1577208424862	Rename method 'setMes'
+1577208430148	Rename local variable 'mes'
+1577208439108	Rename method 'getMes'
+1577208443899	Rename field 'mes'
+1577208463302	Rename method 'getAmountPendiente'
+1577208475544	Rename field 'idUsuario'
+1577208519063	Rename method 'getCargos'
+1577208525888	Rename method 'setCargos'
+1577208575868	Copy compilation unit
+1577210295236	Rename method 'getIdUsuario'
+1577210302546	Rename method 'setIdUsuario'
+1577210308218	Rename local variable 'idUsuario'
+1577210441739	Rename method 'getMes'
+1577210445910	Rename method 'getAnio'
+1577210543000	Extract local variable 'bills'
+1577210688547	Extract local variable 'month'
+1577210702143	Extract local variable 'year'
+1577210757553	Extract local variable 'bill'
+1577211031382	Rename type 'FacturaService'
+1577211163825	Rename field 'billRepo'
+1577211188242	Rename method 'getCurrentBuild'
+1577211245138	Rename method 'getCurrentBill'
+1577211334979	Copy compilation unit
+1577211487670	Rename local variable 'payments'
+1577213008323	Extract local variable 'payment'
+1577213026527	Extract local variable 'paymentStrRep'
+1577213283054	Rename method 'cancelarCargosConPago'
+1577213490668	Rename method 'descontarYAsociarPago'
+1577213505155	Rename method 'payAndAssociate'
+1577213590756	Rename local variable 'pago'
+1577213605452	Rename local variable 'cargosImpagos'
+1577213633264	Rename method 'payAndAddRelation'
+1577213657441	Rename local variable 'chargeWith'
+1577213665939	Rename local variable 'cargoListToPersist'
+1577213679016	Rename local variable 'cargo'
+1577213696552	Rename local variable 'amountDescuento'
+1577217192763	Extract method 'addChargeInBill'
+1577217293476	Extract local variable 'remove'
+1577217417238	Rename method 'addChargeInBill'
+1577218600411	Rename package 'com.meli.charge.api.respone'
+1577219499949	Extract local variable 'allCharge'
+1577219697635	Extract local variable 'totalDebt'
+1577220171228	Copy compilation unit
+1577301023528	Copy compilation unit
+1577301766254	Copy compilation unit
+1577301960134	Copy compilation unit
+1577302279590	Copy compilation units
+1577302450608	Copy compilation unit
+1577302651080	Copy compilation unit
+1577303952371	Copy compilation unit
+1577304904950	Move compilation units
+1577305147257	Rename type 'CurrencyConversionResponse'
+1577305314398	Rename field 'urlCurrentService'
+1577305945113	Rename local variable 'to'
+1577305949462	Rename field 'to'
+1577305957184	Rename method 'getTo'
+1577305961075	Rename method 'setTo'
+1577305965231	Rename local variable 'to'
+1577306166211	Copy compilation unit
+1577306184108	Copy compilation unit
+1577306773025	Extract local variable 'currencyEvt'
+1577307065762	Copy compilation unit
+1577307144880	Rename method 'handleParamMandatoryException'
+1577310148878	Copy compilation unit
+1577311026846	Extract local variable 'reduce'
+1577311060048	Rename local variable 'reduce'
+1577311065523	Rename local variable 'totalDebt'
+1577311217478	Rename type 'TotalDebtResponse'
+1577311231644	Rename field 'totalDebt'
+1577311237214	Rename local variable 'totalDebt'
+1577311244167	Rename method 'getTotalDebt'
+1577311248950	Rename method 'setTotalDebt'
+1577311254260	Rename local variable 'totalDebt'
+1577311269895	Rename method 'totalDebt'
+1577311288138	Rename method 'totalDebt'
+1577311580965	Copy compilation unit
+1577311973253	Copy compilation unit
+1577315131264	Copy compilation unit
+1577315176460	Rename field 'totalCharge'
+1577315186028	Rename local variable 'totalCharge'
+1577315325401	Rename method 'totalPendingCharge'
+1577316643513	Copy compilation unit
+1577316771102	Copy compilation unit
+1577317337766	Copy compilation unit
+1577318138971	Delete element
+1577318171242	Copy compilation unit
+1577318203682	Copy compilation unit
+1577318251047	Copy compilation unit
+1577318430265	Copy compilation unit
+1577318680941	Copy compilation unit
+1577320092875	Rename type 'QueueChargeService'
+1577320116884	Rename method 'enqueuePayment'
+1577320138410	Rename local variable 'payment'
+1577320147426	Rename local variable 'paymentStr'
+1577321131729	Delete element
+1577321139313	Delete element
+1577321146072	Delete element
+1577321153269	Delete element
+1577325484520	Copy compilation unit
+1577325541772	Copy compilation unit
+1577325581440	Copy compilation unit

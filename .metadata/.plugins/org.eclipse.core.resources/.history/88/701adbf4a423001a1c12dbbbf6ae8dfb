@@ -1,0 +1,3 @@
+spring.activemq.broker-url=vm://localhost:61616
+spring.activemq.password=admin
+spring.activemq.user=admin

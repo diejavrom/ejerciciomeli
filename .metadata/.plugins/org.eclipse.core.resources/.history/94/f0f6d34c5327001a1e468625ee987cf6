@@ -1,0 +1,6 @@
+package com.meli.charge.service;
+
+@Service
+public class CurrencyService {
+
+}

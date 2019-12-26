@@ -1,0 +1,10 @@
+package com.meli.currency.api;
+
+public class ConversionResponse {
+
+	private String to;
+	private Double amounTo;
+	private String from;
+	private Double amounFrom;
+	
+}

@@ -1,0 +1,41 @@
+package com.meli.payment.service;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jms.core.JmsTemplate;
+import org.springframework.stereotype.Service;
+
+import com.meli.payment.exception.PaymentAlreadyProcessedException;
+import com.meli.payment.model.Payment;
+import com.meli.payment.repository.PaymentRepository;
+
+@Service
+public class PaymentService {
+
+	@Autowired
+	private JmsTemplate jmsTemplate;
+
+	@Autowired
+	private Queue queueCharge;
+
+	@Autowired
+	private PaymentRepository paymentRepo;
+
+	public String createPayment(Payment payment) {
+
+		if(paymentRepo.existsById(payment.getId())) {
+			throw new PaymentAlreadyProcessedException(String.format("Ya existe un pago con ID '%s'", payment.getId()));
+		}
+
+		Payment paymentInserted = paymentRepo.insert(payment);
+		
+		
+		return paymentInserted.getId();
+	}
+
+	public List<Payment> listByUserId(Integer user_id) {
+		return paymentRepo.findByUserId(user_id);
+	}
+
+}

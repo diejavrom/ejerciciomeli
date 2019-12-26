@@ -1,0 +1,28 @@
+package com.meli.payment.service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
+import com.meli.payment.model.to.CurrencyConversionTO;
+
+
+@Service
+public class ChargeService {
+
+	private static final String URL_CHARGE_SERVICE = "charge.api.url";
+
+	@Autowired
+	private Environment env;
+
+	public Double convertToCurrencyDefault(Integer userId) {
+		String urlChargeAPI = env.getProperty(URL_CHARGE_SERVICE);
+		RestTemplate restTemplate = new RestTemplate();
+		ResponseEntity<CurrencyConversionTO> forEntity = restTemplate.getForEntity(urlChargeAPI + "/total/" + userId, CurrencyConversionTO.class);
+		CurrencyConversionTO totalDebt = forEntity.getBody();
+		return totalDebt.getAmountTo();
+	}
+	
+}

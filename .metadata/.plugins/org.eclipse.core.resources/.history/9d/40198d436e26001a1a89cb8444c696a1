@@ -1,0 +1,126 @@
+package com.meli.charge.model;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+import javax.persistence.UniqueConstraint;
+import javax.persistence.Version;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+@Entity
+@Table(name="FACTURA", uniqueConstraints = {@UniqueConstraint(columnNames = {"MES", "ANIO", "ID_USUARIO"}, name="IX_UNIQUE_FAC_USU")})
+public class Bill {
+
+	@JsonIgnore
+	private Integer id;
+	@JsonIgnore
+	private Integer idUsuario;
+	private Double amount;
+	private Integer mes;
+	private Integer anio;
+	private List<Cargo> cargos;
+	@JsonIgnore
+	private Integer version;
+
+	public Bill() {
+		setCargos(new ArrayList<Cargo>());
+		setAmount(0d);
+	}
+
+	public Bill(Integer idUsuario, Double amount, Integer mes, Integer anio) {
+		this();
+		setIdUsuario(idUsuario);
+		setAmount(amount);
+		setMes(mes);
+		setAnio(anio);
+	}
+
+	@Id
+	@GeneratedValue
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	@Column(name = "ID_USUARIO", nullable = false)
+	public Integer getIdUsuario() {
+		return idUsuario;
+	}
+
+	private void setIdUsuario(Integer idUsuario) {
+		this.idUsuario = idUsuario;
+	}
+
+	@Column(name = "AMOUNT", nullable = false)	
+	public Double getAmount() {
+		return amount;
+	}
+
+	private void setAmount(Double amount) {
+		this.amount = amount;
+	}
+
+	@JsonProperty("amountPending")
+	@Transient
+	public Double getAmountPendiente() {
+		return getCargos().stream().mapToDouble(c -> c.getAmountPending()).sum();
+	}
+	
+	@OneToMany
+	@JoinColumn(name="F_FACTURA_P_ID", nullable = true)
+	public List<Cargo> getCargos() {
+		return cargos;
+	}
+
+	private void setCargos(List<Cargo> cargos) {
+		this.cargos = cargos;
+	}
+
+	@Column(name = "MES", nullable = false)	
+	public Integer getMes() {
+		return mes;
+	}
+
+	private void setMes(Integer mes) {
+		this.mes = mes;
+	}
+
+	@Column(name = "ANIO", nullable = false)	
+	public Integer getAnio() {
+		return anio;
+	}
+
+	private void setAnio(Integer anio) {
+		this.anio = anio;
+	}
+	
+	public void addCargo(Cargo cargo) {
+		getCargos().add(cargo);
+		setAmount(getAmount() + cargo.getAmount());
+	}
+
+	@Version
+	@Column(name="VERSION", nullable = false)
+	public Integer getVersion() {
+		return version;
+	}
+
+	public void setVersion(Integer version) {
+		this.version = version;
+	}
+
+
+}

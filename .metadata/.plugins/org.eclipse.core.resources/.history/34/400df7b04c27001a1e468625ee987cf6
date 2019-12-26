@@ -1,0 +1,12 @@
+package com.meli.currency;
+
+import org.springframework.stereotype.Service;
+
+@Service
+public class CurrencyService {
+
+	public Double convertToCurrencyDefault(String name, Double amount) {
+		
+	}
+
+}

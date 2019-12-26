@@ -1,0 +1,14 @@
+package com.meli.currency.service;
+
+import org.mockito.InjectMocks;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.meli.currency.repository.CurrencyConversionRepository;
+
+public class CurrencyServiceTest {
+
+	@Autowired
+	@InjectMocks
+	private CurrencyConversionRepository currencyRepo;
+	
+}

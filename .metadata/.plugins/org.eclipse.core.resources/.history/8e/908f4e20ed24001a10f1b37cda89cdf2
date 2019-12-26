@@ -1,0 +1,19 @@
+package com.meli.charge.listener;
+
+import org.apache.activemq.Message;
+import org.springframework.jms.annotation.EnableJms;
+import org.springframework.jms.annotation.JmsListener;
+import org.springframework.stereotype.Component;
+
+import com.meli.charge.model.Payment;
+
+@Component
+@EnableJms
+public class PaymentConsumer {
+
+    @JmsListener(destination = "charge.queue")
+    public void listener(Message<Payment> message){
+    	System.out.println(message.);
+    }
+
+}

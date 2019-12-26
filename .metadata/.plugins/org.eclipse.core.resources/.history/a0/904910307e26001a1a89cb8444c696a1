@@ -1,0 +1,53 @@
+package com.meli.payment.service;
+
+import java.util.List;
+
+import javax.jms.Queue;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jms.core.JmsTemplate;
+import org.springframework.stereotype.Service;
+
+import com.google.gson.Gson;
+import com.meli.payment.exception.PaymentAlreadyProcessedException;
+import com.meli.payment.model.Payment;
+import com.meli.payment.repository.PaymentRepository;
+
+@Service
+public class PaymentService {
+
+	@Autowired
+	private JmsTemplate jmsTemplate;
+
+	@Autowired
+	private Queue queueCharge;
+
+	@Autowired
+	private PaymentRepository paymentRepo;
+	
+	@Autowired
+	private Gson gson;
+
+	public String createPayment(Payment payment) {
+
+		//TODO: Chequear la deuda del usuario, hacerlo contra el otro microservicio
+		
+		if(paymentRepo.existsById(payment.getId())) {
+			throw new PaymentAlreadyProcessedException(String.format("Ya existe un pago con ID '%s'", payment.getId()));
+		}
+
+		Payment paymentInserted = paymentRepo.insert(payment);
+
+		String paymentStr = gson.toJson(paymentInserted);
+		jmsTemplate.convertAndSend(queueCharge, paymentStr);
+
+		System.out.println("mensaje encolado: " + paymentStr);
+
+		return paymentInserted.getId();
+	}
+
+	public List<Payment> listByUserId(Integer user_id) {
+		return paymentRepo.findByUserId(user_id);
+	}
+
+}

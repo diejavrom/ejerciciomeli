@@ -1,0 +1,30 @@
+package com.meli.payment.api.reponse;
+
+public class TotalPaymentResponse {
+
+	private Integer userId;
+	private Double totalDebt;
+
+	public TotalPaymentResponse(Integer userId, Double totalPayment) {
+		super();
+		this.userId = userId;
+		this.totalDebt = totalPayment;
+	}
+
+	public Integer getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Integer userId) {
+		this.userId = userId;
+	}
+
+	public Double getTotalDebt() {
+		return totalDebt;
+	}
+
+	public void setTotalDebt(Double totalDebt) {
+		this.totalDebt = totalDebt;
+	}
+
+}

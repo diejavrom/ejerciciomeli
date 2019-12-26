@@ -1,0 +1,13 @@
+version: "3"
+services:
+  payment:
+    image: testdjr.azurecr.io/meli/payment:0.0.1
+    ports:
+      - "8080:8080"
+    networks:
+      - consumer-producer
+    depends_on:
+      - producer
+ 
+networks:
+  consumer-producer:

@@ -1,0 +1,71 @@
+package com.ml.cobranzasmeli.model.to;
+
+import java.sql.Timestamp;
+
+public class StatusUsuarioTO {
+
+	private Integer totalCargos;
+	private Double amountTotalCargos;
+	private Timestamp lastCargo;
+	private Integer totalPagos;
+	private Double amountTotalPagos;
+	private Timestamp lastPago;
+	private Double deuda;
+
+	public Integer getTotalCargos() {
+		return totalCargos;
+	}
+
+	public void setTotalCargos(Integer totalCargos) {
+		this.totalCargos = totalCargos;
+	}
+
+	public Double getAmountTotalCargos() {
+		return amountTotalCargos;
+	}
+
+	public void setAmountTotalCargos(Double amountTotalCargos) {
+		this.amountTotalCargos = amountTotalCargos;
+	}
+
+	public Timestamp getLastCargo() {
+		return lastCargo;
+	}
+
+	public void setLastCargo(Timestamp lastCargo) {
+		this.lastCargo = lastCargo;
+	}
+
+	public Integer getTotalPagos() {
+		return totalPagos;
+	}
+
+	public void setTotalPagos(Integer totalPagos) {
+		this.totalPagos = totalPagos;
+	}
+
+	public Double getAmountTotalPagos() {
+		return amountTotalPagos;
+	}
+
+	public void setAmountTotalPagos(Double amountTotalPagos) {
+		this.amountTotalPagos = amountTotalPagos;
+	}
+
+	public Timestamp getLastPago() {
+		return lastPago;
+	}
+
+	public void setLastPago(Timestamp lastPago) {
+		this.lastPago = lastPago;
+	}
+
+	public Double getDeuda() {
+		return deuda;
+	}
+
+	public void setDeuda(Double deuda) {
+		this.deuda = deuda;
+	}
+
+}

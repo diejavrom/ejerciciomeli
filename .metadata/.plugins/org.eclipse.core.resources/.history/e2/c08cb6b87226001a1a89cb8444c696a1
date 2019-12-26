@@ -1,0 +1,92 @@
+package com.meli.charge.model;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.data.mongodb.core.mapping.Document;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+@Document(collection = "bills")
+public class Bill {
+
+	private Integer id;
+	private Integer idUsuario;
+	private Double amount;
+	private Integer month;
+	private Integer year;
+	private List<Charge> charges;
+
+	public Bill() {
+		setCargos(new ArrayList<Charge>());
+		setAmount(0d);
+	}
+
+	public Bill(Integer idUsuario, Double amount, Integer month, Integer year) {
+		this();
+		setIdUsuario(idUsuario);
+		setAmount(amount);
+		setMonth(month);
+		setYear(year);
+	}
+
+	@Id
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public Integer getIdUsuario() {
+		return idUsuario;
+	}
+
+	private void setIdUsuario(Integer idUsuario) {
+		this.idUsuario = idUsuario;
+	}
+
+	public Double getAmount() {
+		return amount;
+	}
+
+	private void setAmount(Double amount) {
+		this.amount = amount;
+	}
+
+	public Double getPendingAmount() {
+		return getCargos().stream().mapToDouble(c -> c.getAmountPending()).sum();
+	}
+	
+	public List<Charge> getCargos() {
+		return charges;
+	}
+
+	private void setCargos(List<Charge> charges) {
+		this.charges = charges;
+	}
+
+	public Integer getMonth() {
+		return month;
+	}
+
+	private void setMonth(Integer month) {
+		this.month = month;
+	}
+
+	public Integer getYear() {
+		return year;
+	}
+
+	private void setYear(Integer year) {
+		this.year = year;
+	}
+	
+	public void addCharge(Charge charge) {
+		getCargos().add(charge);
+		setAmount(getAmount() + charge.getAmount());
+	}
+
+}

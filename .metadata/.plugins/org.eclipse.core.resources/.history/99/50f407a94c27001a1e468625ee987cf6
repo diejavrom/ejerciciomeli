@@ -1,0 +1,13 @@
+package com.meli.currency.repository;
+
+import java.util.List;
+
+import org.springframework.data.mongodb.repository.MongoRepository;
+
+import com.meli.currency.model.CurrencyConversion;
+
+public interface CurrencyConversionRepository extends MongoRepository<CurrencyConversion, String> {
+
+	public List<CurrencyConversion> findByName(String name);
+	
+}

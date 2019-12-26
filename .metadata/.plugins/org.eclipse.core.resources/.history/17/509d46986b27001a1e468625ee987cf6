@@ -1,0 +1,12 @@
+package com.meli.payment.model.to;
+
+import java.io.Serializable;
+
+public class TotalDebtTO implements Serializable {
+
+	private static final long serialVersionUID = -7606412876851538738L;
+
+	private Integer userId;
+	private Double totalPendingCharge;
+
+}

@@ -1,0 +1,16 @@
+#!/bin/sh
+#
+# kubernetes va a poner los secrets en variables de entorno
+# el resto es el PROFILE "prod"
+#
+# quito  -Xmx => esto lo decide docker
+#[ -f target/payment-*.jar ] && echo "estoy en el proyecto. traigo el jar desde target" && cp target/payment-*.jar  payment-app-final.jar
+
+base_path=`dirname $0`
+
+java_args="-Djava.security.egd=file:/dev/./urandom
+  -jar $base_path/payment-app-final.jar \
+  --debug=false \
+  "
+
+java $java_args $@ | sed -e "s/^/$PROC: /"

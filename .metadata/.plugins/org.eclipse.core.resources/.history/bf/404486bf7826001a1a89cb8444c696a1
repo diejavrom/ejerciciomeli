@@ -1,0 +1,14 @@
+package com.meli.charge;
+
+import org.springframework.stereotype.Service;
+
+import com.meli.charge.repository.BillRepository;
+
+@Service
+public class BillService {
+
+	@Autowired
+	private BillRepository billRepo;
+	
+	
+}

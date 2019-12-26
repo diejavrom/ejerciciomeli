@@ -1,0 +1,100 @@
+package com.meli.charge.model;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.data.mongodb.core.mapping.Document;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+@Document(collection = "bills")
+public class Bill {
+
+	private Integer id;
+	private Integer idUsuario;
+	private Double amount;
+	private Integer mes;
+	private Integer anio;
+	private List<Charge> cargos;
+
+	public Bill() {
+		setCargos(new ArrayList<Charge>());
+		setAmount(0d);
+	}
+
+	public Bill(Integer idUsuario, Double amount, Integer mes, Integer anio) {
+		this();
+		setIdUsuario(idUsuario);
+		setAmount(amount);
+		setMes(mes);
+		setAnio(anio);
+	}
+
+	@Id
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public Integer getIdUsuario() {
+		return idUsuario;
+	}
+
+	private void setIdUsuario(Integer idUsuario) {
+		this.idUsuario = idUsuario;
+	}
+
+	public Double getAmount() {
+		return amount;
+	}
+
+	private void setAmount(Double amount) {
+		this.amount = amount;
+	}
+
+	public Double getAmountPendiente() {
+		return getCargos().stream().mapToDouble(c -> c.getAmountPending()).sum();
+	}
+	
+	public List<Cargo> getCargos() {
+		return cargos;
+	}
+
+	private void setCargos(List<Cargo> cargos) {
+		this.cargos = cargos;
+	}
+
+	public Integer getMes() {
+		return mes;
+	}
+
+	private void setMes(Integer mes) {
+		this.mes = mes;
+	}
+
+	public Integer getAnio() {
+		return anio;
+	}
+
+	private void setAnio(Integer anio) {
+		this.anio = anio;
+	}
+	
+	public void addCargo(Cargo cargo) {
+		getCargos().add(cargo);
+		setAmount(getAmount() + cargo.getAmount());
+	}
+
+	public Integer getVersion() {
+		return version;
+	}
+
+	public void setVersion(Integer version) {
+		this.version = version;
+	}
+
+}

@@ -1,0 +1,43 @@
+package com.meli.charge.model.to;
+
+public class CurrencyConversionTO {
+
+	private String to;
+	private Double amountTo;
+	private Double amountFrom;
+	
+	public CurrencyConversionTO() {
+	}
+	
+	public CurrencyConversionTO(String to, Double amountTo, Double amountFrom) {
+		super();
+		this.to = to;
+		this.amountTo = amountTo;
+		this.amountFrom = amountFrom;
+	}
+
+	public String getTo() {
+		return to;
+	}
+
+	public void setTo(String to) {
+		this.to = to;
+	}
+
+	public Double getAmountTo() {
+		return amountTo;
+	}
+
+	public void setAmountTo(Double amountTo) {
+		this.amountTo = amountTo;
+	}
+
+	public Double getAmountFrom() {
+		return amountFrom;
+	}
+
+	public void setAmountFrom(Double amountFrom) {
+		this.amountFrom = amountFrom;
+	}
+
+}
