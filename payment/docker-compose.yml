@@ -1,5 +1,18 @@
 version: "3"
 services:
+  nginx: 
+    image: testdjr.azurecr.io/meli/nginx:0.0.1
+    restart: always
+    ports:
+      - "80:80"
+    networks:
+      - meli-app-network
+    links:
+      - "payment:payment"
+      - "charge:charge"
+      - "bill:bill"
+      - "currency:currency"
+      - "status:status"
   payment:
     image: testdjr.azurecr.io/meli/payment:0.0.1
     ports:
@@ -8,6 +21,8 @@ services:
       - meli-app-network
     links:
       - "activemqcontainer:activemqcontainer"
+      - "charge:charge"
+      - "currency:currency"
   charge:
     image: testdjr.azurecr.io/meli/charge:0.0.1
     ports:
@@ -16,6 +31,30 @@ services:
       - meli-app-network
     links:
       - "activemqcontainer:activemqcontainer"
+      - "currency:currency"
+  bill:
+    image: testdjr.azurecr.io/meli/bill:0.0.1
+    ports:
+      - "8480:8480"
+    networks:
+      - meli-app-network
+    links:
+      - "activemqcontainer:activemqcontainer"
+  currency:
+    image: testdjr.azurecr.io/meli/currency:0.0.1
+    ports:
+      - "8280:8280"
+    networks:
+      - meli-app-network
+  status:
+    image: testdjr.azurecr.io/meli/status:0.0.1
+    ports:
+      - "8380:8380"
+    networks:
+      - meli-app-network
+    links:
+      - "payment:payment"
+      - "charge:charge"
   activemqcontainer:
     image: "webcenter/activemq"
     ports:
