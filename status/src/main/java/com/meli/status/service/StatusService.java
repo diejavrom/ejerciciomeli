@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.meli.status.api.response.StatusUsuarioResponse;
+import com.meli.status.exception.ParamMandatoryException;
 import com.meli.status.model.TotalChargeInfoTO;
 import com.meli.status.model.TotalPaymentInfoTO;
 
@@ -13,7 +14,7 @@ import com.meli.status.model.TotalPaymentInfoTO;
 public class StatusService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(StatusService.class);
-	
+
 	@Autowired
 	private ChargeService chargeService;
 
@@ -21,8 +22,12 @@ public class StatusService {
 	private PaymentService paymentService;
 
 	public StatusUsuarioResponse getStatus(Integer user_id) {
-
+		
 		LOGGER.info("Consultando status del usuario {} ", user_id);
+
+		if(user_id == null) {
+			throw new ParamMandatoryException("user_id no puede ser null");
+		}
 
 		TotalChargeInfoTO totalCharge = chargeService.getTotalCharge(user_id);
 		TotalPaymentInfoTO totalPayment = paymentService.getTotalPayment(user_id);
