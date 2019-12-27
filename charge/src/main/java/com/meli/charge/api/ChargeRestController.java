@@ -27,14 +27,20 @@ public class ChargeRestController {
 	private ChargeService chargeService;
 
     @RequestMapping(value = "/create", method = RequestMethod.POST)
-    public ResponseEntity<String> crear(@Valid @RequestBody ChargeEvent chargeEvt) {
+    public ResponseEntity<Charge> crear(@Valid @RequestBody ChargeEvent chargeEvt) {
     	Charge charge = chargeService.createCharge(chargeEvt);
-    	return new ResponseEntity<String>(charge.getId(), HttpStatus.OK);
+    	return new ResponseEntity<Charge>(charge, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/list/{user_id}", method = RequestMethod.GET)
     public ResponseEntity<List<Charge>> list(@Valid @PathVariable Integer user_id) {
     	List<Charge> payments = chargeService.listByUserId(user_id);
+    	return new ResponseEntity<List<Charge>>(payments, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/listpending/{user_id}", method = RequestMethod.GET)
+    public ResponseEntity<List<Charge>> listPending(@Valid @PathVariable Integer user_id) {
+    	List<Charge> payments = chargeService.listPendingByUserId(user_id);
     	return new ResponseEntity<List<Charge>>(payments, HttpStatus.OK);
     }
 

@@ -12,4 +12,6 @@ public interface PaymentRepository extends MongoRepository<Payment, String> {
 
 	public List<Payment> findByUserId(Integer userId);
 
+	public List<Payment> findByIdempKey(String idempKey);
+
 }

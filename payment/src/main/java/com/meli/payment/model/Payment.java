@@ -4,7 +4,10 @@ import java.io.Serializable;
 import java.util.Date;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import com.meli.payment.api.request.PaymentEvent;
 
 @Document(collection = "payments")
 public class Payment implements Serializable {
@@ -13,12 +16,23 @@ public class Payment implements Serializable {
 
 	private String id;
 	private String currency;
+	@Indexed(name="idempkey_unique", unique = true)
+	private String idempKey;
 	private Double amount;
 	private Double originalAmount;
 	private Date dateObj;
 	private Integer userId;
 
 	public Payment() {
+	}
+
+	public Payment(PaymentEvent paymentEvt, Double amountInCurrencyDefault, String idempKey) {
+		setAmount(amountInCurrencyDefault);
+		setOriginalAmount(paymentEvt.getAmount());
+		setCurrency(paymentEvt.getCurrency());
+		setUserId(paymentEvt.getUser_id());
+		setDateObj(new Date());
+		setIdempKey(idempKey);
 	}
 
 	@Id
@@ -70,4 +84,12 @@ public class Payment implements Serializable {
 		this.dateObj = dateObj;
 	}
 	
+	public String getIdempKey() {
+		return idempKey;
+	}
+
+	public void setIdempKey(String idempKey) {
+		this.idempKey = idempKey;
+	}
+
 }

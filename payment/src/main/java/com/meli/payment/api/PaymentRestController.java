@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.meli.payment.api.reponse.TotalPaymentResponse;
+import com.meli.payment.api.request.PaymentEvent;
 import com.meli.payment.model.Payment;
 import com.meli.payment.service.PaymentService;
 
@@ -26,10 +27,9 @@ public class PaymentRestController {
 	private PaymentService paymentService;
 
     @RequestMapping(value = "/create", method = RequestMethod.POST)
-    public ResponseEntity<String> crear(@RequestHeader(value="Idemp-Key") String idempKey, @Valid @RequestBody Payment paymentEvt) {
-    	paymentEvt.setId(idempKey);
-    	String id = paymentService.createPayment(paymentEvt);
-    	return new ResponseEntity<String>(id, HttpStatus.OK);
+    public ResponseEntity<Payment> crear(@RequestHeader(value="Idemp-Key") String idempKey, @Valid @RequestBody PaymentEvent paymentEvt) {
+    	Payment payment = paymentService.createPayment(paymentEvt, idempKey);
+    	return new ResponseEntity<Payment>(payment, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/list/{user_id}", method = RequestMethod.GET)

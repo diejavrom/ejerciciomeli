@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.meli.payment.DateHelper;
 import com.meli.payment.api.reponse.TotalPaymentResponse;
+import com.meli.payment.api.request.PaymentEvent;
 import com.meli.payment.exception.ParamMandatoryException;
 import com.meli.payment.exception.PaymentAlreadyProcessedException;
 import com.meli.payment.exception.PaymentExceedsTotalDebtException;
@@ -29,23 +30,22 @@ public class PaymentService {
 	@Autowired
 	private CurrencyService currencyService;
 
-	public String createPayment(Payment payment) {
+	public Payment createPayment(PaymentEvent paymentEvt, String idempKey) {
 
-		checkPayment(payment);
+		checkPaymentEvt(paymentEvt, idempKey);
 
-		Double originalAmount = payment.getAmount();
-		Double amountInCurrencyDefault = currencyService.convertToCurrencyDefault(payment.getCurrency(), originalAmount);
+		Double originalAmount = paymentEvt.getAmount();
+		Double amountInCurrencyDefault = currencyService.convertToCurrencyDefault(paymentEvt.getCurrency(), originalAmount);
 
-		checkDebtTotal(payment.getUserId(), amountInCurrencyDefault);
+		checkDebtTotal(paymentEvt.getUser_id(), amountInCurrencyDefault);
 
-		payment.setAmount(amountInCurrencyDefault);
-		payment.setOriginalAmount(originalAmount);
-		payment.setDateObj(new Date(System.currentTimeMillis()));
+		Payment payment = new Payment(paymentEvt, amountInCurrencyDefault, idempKey);
+		
 		Payment paymentInserted = paymentRepo.insert(payment);
 
 		queueChargeService.enqueuePayment(paymentInserted);
-		
-		return paymentInserted.getId();
+
+		return paymentInserted;
 	}
 
 	private void checkDebtTotal(Integer userId, Double amountInCurrencyDefault) {
@@ -56,19 +56,18 @@ public class PaymentService {
 		}
 	}
 
-	private void checkPayment(Payment payment) {
-		if(payment.getAmount() == null || payment.getAmount() <= 0) {
+	private void checkPaymentEvt(PaymentEvent paymentEvt, String idempKey) {
+		if(paymentEvt.getAmount() == null || paymentEvt.getAmount() <= 0) {
 			throw new ParamMandatoryException("amount no puede ser null ni menor o igual que cero");
 		}
-		if(payment.getCurrency() == null) {
+		if(paymentEvt.getCurrency() == null) {
 			throw new ParamMandatoryException("currency no puede ser null");
 		}
-		if(payment.getUserId() == null) {
+		if(paymentEvt.getUser_id() == null) {
 			throw new ParamMandatoryException("user_id no puede ser null");
 		}
-		
-		if(paymentRepo.existsById(payment.getId())) {
-			throw new PaymentAlreadyProcessedException(String.format("Ya existe un pago con ID '%s'", payment.getId()));
+		if(!paymentRepo.findByIdempKey(idempKey).isEmpty()) {
+			throw new PaymentAlreadyProcessedException(String.format("El pago con identificación '%s' ya fue procesado", idempKey));
 		}
 	}
 

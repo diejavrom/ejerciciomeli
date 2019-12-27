@@ -28,6 +28,11 @@ public class ChargeTypeLoader implements ApplicationRunner {
 		tipoCargoRepo.save(tp);
 
 		tp = new ChargeType();
+		tp.setType("CLASIFICADO");
+		tp.setCategory("MARKETPLACE");
+		tipoCargoRepo.save(tp);
+
+		tp = new ChargeType();
 		tp.setType("CRÉDITO");
 		tp.setCategory("SERVICIOS");
 		tipoCargoRepo.save(tp);

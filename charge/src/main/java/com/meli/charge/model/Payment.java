@@ -8,7 +8,6 @@ public class Payment implements Serializable {
 
 	private String id;
 	private Double amount;
-	private String currency;
 	private Integer userId;
 
 	public String getId() {
@@ -25,14 +24,6 @@ public class Payment implements Serializable {
 
 	public void setAmount(Double amount) {
 		this.amount = amount;
-	}
-
-	public String getCurrency() {
-		return currency;
-	}
-
-	public void setCurrency(String currency) {
-		this.currency = currency;
 	}
 
 	public Integer getUserId() {
