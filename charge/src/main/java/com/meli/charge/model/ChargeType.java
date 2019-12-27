@@ -9,6 +9,15 @@ public class ChargeType {
 	public String category;
 	public String type;
 
+	public ChargeType() {
+	}
+
+	public ChargeType(String category, String type) {
+		super();
+		this.category = category;
+		this.type = type;
+	}
+	
 	@Id
 	public String getType() {
 		return type;

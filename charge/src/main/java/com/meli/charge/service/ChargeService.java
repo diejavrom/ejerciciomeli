@@ -44,7 +44,7 @@ public class ChargeService {
 
 	public Charge createCharge(ChargeEvent chargeEvt) {
 
-		LOGGER.info("Procesando cargo para el usuario -> {},  event_id -> {}, currency -> {}, amount -> {} ", chargeEvt.getUserId(), chargeEvt.getEvent_id(), chargeEvt.getCurrency(), chargeEvt.getAmount());
+		LOGGER.info("Procesando cargo para el usuario -> {},  event_id -> {}, currency -> {}, amount -> {} ", chargeEvt.getUser_id(), chargeEvt.getEvent_id(), chargeEvt.getCurrency(), chargeEvt.getAmount());
 
 		checkEventCharge(chargeEvt);
 
@@ -68,7 +68,7 @@ public class ChargeService {
 		if(evento.getEvent_id() == null) {
 			throw new ParamMandatoryException("event_id no puede ser null");
 		}
-		if(evento.getUserId() == null) {
+		if(evento.getUser_id() == null) {
 			throw new ParamMandatoryException("user_id no puede ser null");
 		}
 		if(evento.getEvent_type() == null || evento.getEvent_type().trim().isEmpty()) {

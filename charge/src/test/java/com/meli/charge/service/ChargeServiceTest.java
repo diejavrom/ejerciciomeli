@@ -74,9 +74,7 @@ public class ChargeServiceTest {
 		    .withEvent_type(eventType)
 		    .build();
 
-		ChargeType chargeType = new ChargeType();
-		chargeType.setType(eventType);
-		chargeType.setCategory(category);
+		ChargeType chargeType = new ChargeType(eventType, category);
 
 		when(chargeRepo.insert(ArgumentMatchers.any(Charge.class))).thenAnswer(new Answer<Charge>() {
 		    public Charge answer(InvocationOnMock invocation) {
@@ -145,9 +143,7 @@ public class ChargeServiceTest {
 			    .withEvent_type(eventType)
 			    .build();
 		
-		ChargeType chargeType = new ChargeType();
-		chargeType.setType(eventType);
-		chargeType.setCategory("SERVICIOS");
+		ChargeType chargeType = new ChargeType(eventType, "SERVICIOS");
 
 		Charge charge = new Charge(chargeEvt, chargeEvt.getAmount(), chargeType);
 
@@ -179,9 +175,7 @@ public class ChargeServiceTest {
 			    .withEvent_type(eventType)
 			    .build();
 
-		ChargeType chargeType = new ChargeType();
-		chargeType.setType(eventType);
-		chargeType.setCategory("SERVICIOS");
+		ChargeType chargeType = new ChargeType(eventType, "SERVICIOS");
 
 		Charge charge = new Charge(chargeEvt, chargeEvt.getAmount(), chargeType);
 
@@ -249,7 +243,7 @@ public class ChargeServiceTest {
 			ce.setCurrency(currency);
 			ce.setDate(date);
 			ce.setEvent_id(event_id);
-			ce.setUserId(userId);
+			ce.setUser_id(userId);
 			ce.setEvent_type(event_type);
 			return ce;
 		}

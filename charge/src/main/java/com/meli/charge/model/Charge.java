@@ -35,7 +35,7 @@ public class Charge {
 	public Charge(ChargeEvent chargeEvt, Double amountInDefCurrency, ChargeType chargeType) {
 		this();
 		setEvent_id(chargeEvt.getEvent_id());
-		setUserId(chargeEvt.getUserId());
+		setUserId(chargeEvt.getUser_id());
 		setOriginalAmount(chargeEvt.getAmount());
 		setAmount(amountInDefCurrency);
 		setAmountPending(amountInDefCurrency);

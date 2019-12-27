@@ -3,7 +3,7 @@ package com.meli.charge.api.request;
 public class ChargeEvent {
 
 	private Integer event_id;
-	private Integer userId;
+	private Integer user_id;
 	private Double amount;
 	private String event_type;
 	private String date;
@@ -20,12 +20,12 @@ public class ChargeEvent {
 		this.event_id = event_id;
 	}
 
-	public Integer getUserId() {
-		return userId;
+	public Integer getUser_id() {
+		return user_id;
 	}
 
-	public void setUserId(Integer userId) {
-		this.userId = userId;
+	public void setUser_id(Integer user_id) {
+		this.user_id = user_id;
 	}
 
 	public Double getAmount() {
