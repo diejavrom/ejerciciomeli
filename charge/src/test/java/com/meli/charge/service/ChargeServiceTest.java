@@ -57,23 +57,25 @@ public class ChargeServiceTest {
     }
 
 	@Test
-	public void testCreateChargeFromEvent() {
-		ChargeEvent chargeEvt = new ChargeEvent();
+	public void testCreateChargeFromEventOk() {
 		Double amount = 100d;
-		chargeEvt.setAmount(amount);
 		String currency = "ARS";
-		chargeEvt.setCurrency(currency);
-		chargeEvt.setDate("2019-12-16T03:00:00.000+0000");
 		Integer event_id = 1234;
-		chargeEvt.setEvent_id(event_id);
 		Integer userId = 12223;
-		chargeEvt.setUserId(userId);
 		String eventType = "PUBLICIDAD";
-		chargeEvt.setEvent_type(eventType);
+		String category = "SERVICIOS";
+
+		ChargeEvent chargeEvt = new BuilderEvtCharge()
+			.withAmount(amount)
+		    .withCurrency(currency)
+		    .withDate("2019-12-16T03:00:00.000+0000")
+		    .withEvent_id(event_id)
+		    .withUserId(userId)
+		    .withEvent_type(eventType)
+		    .build();
 
 		ChargeType chargeType = new ChargeType();
 		chargeType.setType(eventType);
-		String category = "SERVICIOS";
 		chargeType.setCategory(category);
 
 		when(chargeRepo.insert(ArgumentMatchers.any(Charge.class))).thenAnswer(new Answer<Charge>() {
@@ -101,27 +103,23 @@ public class ChargeServiceTest {
 
 	@Test(expected = ChargeOutOfDateException.class)
 	public void testCreateChargeFromEventOutOfDate() {
-		ChargeEvent chargeEvt = new ChargeEvent();
 		Double amount = 100d;
-		chargeEvt.setAmount(amount);
 		String currency = "ARS";
-		chargeEvt.setCurrency(currency);
-	
 		Date dateOutOfRange = new Date(DateHelper.getInstance().getNow().getTime() + DateHelper.ONE_DAY*30);
-		chargeEvt.setDate(DateHelper.getInstance().dateToString(dateOutOfRange));
-		
+		String date = DateHelper.getInstance().dateToString(dateOutOfRange);
 		Integer event_id = 1234;
-		chargeEvt.setEvent_id(event_id);
 		Integer userId = 12223;
-		chargeEvt.setUserId(userId);
 		String eventType = "PUBLICIDAD";
-		chargeEvt.setEvent_type(eventType);
-
-		ChargeType chargeType = new ChargeType();
-		chargeType.setType(eventType);
-		String category = "SERVICIOS";
-		chargeType.setCategory(category);
-
+		
+		ChargeEvent chargeEvt = new BuilderEvtCharge()
+				.withAmount(amount)
+			    .withCurrency(currency)
+			    .withDate(date)
+			    .withEvent_id(event_id)
+			    .withUserId(userId)
+			    .withEvent_type(eventType)
+			    .build();
+		
 		chargeService.createCharge(chargeEvt);
 	}
 
@@ -130,26 +128,26 @@ public class ChargeServiceTest {
 		Integer userId = 289;
 		String currency = "ARS";
 		double amount = 100d;
+		Integer event_id = 1234;
+		String eventType = "PUBLICIDAD";
 
 		Payment payment = new Payment();
 		payment.setAmount(amount);
 		payment.setUserId(userId);
 		payment.setCurrency(currency);
 	
-		ChargeEvent chargeEvt = new ChargeEvent();
-		chargeEvt.setAmount(amount - 10);
-		chargeEvt.setCurrency(currency);
-		chargeEvt.setDate("2019-12-16T03:00:00.000+0000");
-		Integer event_id = 1234;
-		chargeEvt.setEvent_id(event_id);
-		chargeEvt.setUserId(userId);
-		String eventType = "PUBLICIDAD";
-		chargeEvt.setEvent_type(eventType);
-
+		ChargeEvent chargeEvt = new BuilderEvtCharge()
+				.withAmount(amount - 10)
+			    .withCurrency(currency)
+			    .withDate("2019-12-16T03:00:00.000+0000")
+			    .withEvent_id(event_id)
+			    .withUserId(userId)
+			    .withEvent_type(eventType)
+			    .build();
+		
 		ChargeType chargeType = new ChargeType();
 		chargeType.setType(eventType);
-		String category = "SERVICIOS";
-		chargeType.setCategory(category);
+		chargeType.setCategory("SERVICIOS");
 
 		Charge charge = new Charge(chargeEvt, chargeEvt.getAmount(), chargeType);
 
@@ -163,27 +161,27 @@ public class ChargeServiceTest {
 		Integer userId = 289;
 		String currency = "ARS";
 		Double amount = 100d;
+		Integer event_id = 1234;
+		String eventType = "PUBLICIDAD";
 
 		Payment payment = new Payment();
 		payment.setId("ksaklasklaslk");
 		payment.setAmount(amount);
 		payment.setUserId(userId);
 		payment.setCurrency(currency);
-	
-		ChargeEvent chargeEvt = new ChargeEvent();
-		chargeEvt.setAmount(2*amount);
-		chargeEvt.setCurrency(currency);
-		chargeEvt.setDate("2019-12-16T03:00:00.000+0000");
-		Integer event_id = 1234;
-		chargeEvt.setEvent_id(event_id);
-		chargeEvt.setUserId(userId);
-		String eventType = "PUBLICIDAD";
-		chargeEvt.setEvent_type(eventType);
+
+		ChargeEvent chargeEvt = new BuilderEvtCharge()
+				.withAmount(2*amount)
+			    .withCurrency(currency)
+			    .withDate("2019-12-16T03:00:00.000+0000")
+			    .withEvent_id(event_id)
+			    .withUserId(userId)
+			    .withEvent_type(eventType)
+			    .build();
 
 		ChargeType chargeType = new ChargeType();
 		chargeType.setType(eventType);
-		String category = "SERVICIOS";
-		chargeType.setCategory(category);
+		chargeType.setCategory("SERVICIOS");
 
 		Charge charge = new Charge(chargeEvt, chargeEvt.getAmount(), chargeType);
 
@@ -202,4 +200,59 @@ public class ChargeServiceTest {
 		Assert.assertTrue(chargeResult.getPayments().contains(payment));
 	}
 
+
+	private static class BuilderEvtCharge {
+		
+		private Double amount;
+		private String currency;
+		private String date;
+		private Integer event_id;
+		private Integer userId;
+		private String event_type;
+		
+		public BuilderEvtCharge() {
+		}
+
+		public BuilderEvtCharge withAmount(Double amount) {
+			this.amount = amount;
+			return this;
+		}
+		
+		public BuilderEvtCharge withCurrency(String currency) {
+			this.currency = currency;
+			return this;
+		}
+		
+		public BuilderEvtCharge withDate(String date) {
+			this.date = date;
+			return this;
+		}
+
+		public BuilderEvtCharge withEvent_id(Integer event_id) {
+			this.event_id = event_id;
+			return this;
+		}
+
+		public BuilderEvtCharge withUserId(Integer userId) {
+			this.userId = userId;
+			return this;
+		}
+
+		public BuilderEvtCharge withEvent_type(String event_type) {
+			this.event_type = event_type;
+			return this;
+		}
+
+		public ChargeEvent build() {
+			ChargeEvent ce = new ChargeEvent();
+			ce.setAmount(amount);
+			ce.setCurrency(currency);
+			ce.setDate(date);
+			ce.setEvent_id(event_id);
+			ce.setUserId(userId);
+			ce.setEvent_type(event_type);
+			return ce;
+		}
+		
+	}
 }

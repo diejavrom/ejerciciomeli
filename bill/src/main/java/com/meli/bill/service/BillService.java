@@ -64,7 +64,7 @@ public class BillService {
 		return billRepo.findByUserId(user_id);
 	}
 
-	public Bill addChargeToBill(ChargeTO chargeTO) {
+	public Bill receiveCharge(ChargeTO chargeTO) {
 
 		checkChargeParam(chargeTO);
 
@@ -92,9 +92,9 @@ public class BillService {
 		} else {
 			charge.updateWithChargeTOInfo(chargeTO);
 		}
-		
+
 		bill.updateCharge(charge);
-		
+
 		return billRepo.save(bill);
 	}
 

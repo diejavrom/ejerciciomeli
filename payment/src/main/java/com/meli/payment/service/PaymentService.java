@@ -21,7 +21,7 @@ public class PaymentService {
 	private PaymentRepository paymentRepo;
 	
 	@Autowired
-	private QueueChargeService queueService;
+	private QueueChargeService queueChargeService;
 	
 	@Autowired
 	private ChargeService chargeService;
@@ -43,7 +43,7 @@ public class PaymentService {
 		payment.setDateObj(new Date(System.currentTimeMillis()));
 		Payment paymentInserted = paymentRepo.insert(payment);
 
-		queueService.enqueuePayment(paymentInserted);
+		queueChargeService.enqueuePayment(paymentInserted);
 		
 		return paymentInserted.getId();
 	}

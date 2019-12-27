@@ -8,9 +8,9 @@ import com.meli.bill.model.to.ChargeTO;
 public class BillTest {
 
 	@Test
-	public void testAmount() {
+	public void testAmountInvariant() {
 		Bill b = new Bill();
-		
+
 		Double a1 = 70d;
 		Charge c1 = new Charge();
 		c1.setId("1234");
@@ -64,7 +64,7 @@ public class BillTest {
 		chargeTO.setPaymentId(ip.getId());
 
 		c1.updateWithChargeTOInfo(chargeTO);
-		
+
 		Assert.assertTrue(b.existsChargeWithPayment(idCharge1, idPayment));
 		Assert.assertTrue(!b.existsChargeWithPayment("lkdkldlkd", "sklslkslks"));
 	}

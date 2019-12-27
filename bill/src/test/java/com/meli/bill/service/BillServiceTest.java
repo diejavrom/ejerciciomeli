@@ -124,7 +124,7 @@ public class BillServiceTest {
 		when(billRepo.findByUserIdMonthYear(userId, m, y)).thenReturn(Collections.singletonList(billReturn));
 		when(billRepo.save(ArgumentMatchers.any(Bill.class))).thenReturn(billReturn);
 
-		billService.addChargeToBill(chargeTO);
+		billService.receiveCharge(chargeTO);
 	}
 
 	@Test
@@ -154,14 +154,14 @@ public class BillServiceTest {
 		    }
 		});
 
-		Bill billPersisted = billService.addChargeToBill(chargeTO);
+		Bill billPersisted = billService.receiveCharge(chargeTO);
 		Assert.assertEquals(billPersisted.getAmount(), amountCharge);
 		Assert.assertEquals(billPersisted.getPendingAmount(), (Double)(amountCharge/2));
 	}
 
 	@Test(expected = ParamMandatoryException.class)
 	public void testAddChargeWithNullParam() {
-		billService.addChargeToBill(null);
+		billService.receiveCharge(null);
 	}
 
 }

@@ -40,7 +40,7 @@ public class StatusServiceTest {
     }
 
 	@Test
-	public void testDebtWithNotNullParam() {
+	public void testDebt() {
 		Integer userId = 1234;
 	
 		double amountPayment = 550d;

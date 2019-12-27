@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.meli.charge.DateHelper;
@@ -14,6 +15,7 @@ import com.meli.charge.api.request.ChargeEvent;
 public class Charge {
 
 	private String id;
+	@Indexed(name="event_id_unique", unique = true)
 	private Integer event_id;
 	private Integer userId;
 	private Double originalAmount;

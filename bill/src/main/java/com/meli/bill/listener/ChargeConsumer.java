@@ -29,7 +29,7 @@ public class ChargeConsumer {
     	String chargeStrRep = message.getPayload();
     	LOGGER.info("Se recibió un evento de cargo {} ", chargeStrRep);
 		ChargeTO chargeTO = gson.fromJson(chargeStrRep, ChargeTO.class);
-    	billService.addChargeToBill(chargeTO);
+    	billService.receiveCharge(chargeTO);
     }
 
 }

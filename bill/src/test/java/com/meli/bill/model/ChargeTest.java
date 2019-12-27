@@ -14,7 +14,6 @@ public class ChargeTest {
 		c.setAmount(amount);
 		c.setAmountPending(amount);
 		
-		
 		String idPayment = "1234";
 		InfoPayment ip = new InfoPayment(idPayment, amount/2);
 		
@@ -29,7 +28,7 @@ public class ChargeTest {
 	}
 
 	@Test
-	public void testAmountPayment() {
+	public void testAmountInvariantPayment() {
 		Charge c = new Charge();
 		double amount = 100d;
 		c.setAmount(amount);
