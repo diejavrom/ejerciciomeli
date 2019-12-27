@@ -4,7 +4,6 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 import org.junit.Assert;
@@ -15,12 +14,15 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
 import com.meli.bill.DateHelper;
 import com.meli.bill.exception.ChargeAndPayAlreadyProccessedException;
+import com.meli.bill.exception.ParamMandatoryException;
 import com.meli.bill.model.Bill;
 import com.meli.bill.model.Charge;
 import com.meli.bill.model.to.ChargeTO;
@@ -57,7 +59,6 @@ public class BillServiceTest {
 		
 		Bill billRecovery = billService.getBillByUserMonthYear(userId, m, y);
 		Assert.assertEquals(billRecovery, bill);
-		
 	}
 
 	@Test
@@ -118,13 +119,12 @@ public class BillServiceTest {
 		chargeTO.setPaymentId("asasas");
 		chargeTO.setPaymentAmount(50d);
 
-		billReturn.addCharge(new Charge(chargeTO));
+		billReturn.updateCharge(new Charge(chargeTO));
 
 		when(billRepo.findByUserIdMonthYear(userId, m, y)).thenReturn(Collections.singletonList(billReturn));
 		when(billRepo.save(ArgumentMatchers.any(Bill.class))).thenReturn(billReturn);
 
 		billService.addChargeToBill(chargeTO);
-		
 	}
 
 	@Test
@@ -133,13 +133,14 @@ public class BillServiceTest {
 		Integer m = 12;
 		Integer y = 2019;
 		Double amountCharge = 100d;
+
 		Bill bill = new Bill();
 		bill.setMonth(m);
 		bill.setYear(y);
 		bill.setUserId(userId);
 
 		ChargeTO chargeTO = new ChargeTO();
-		chargeTO.setDateObj(new Date());
+		chargeTO.setDateObj(DateHelper.getInstance().stringToTimestamp("2019-12-16T00:00:00"));
 		chargeTO.setEvent_id(1234);
 		chargeTO.setAmount(amountCharge);
 		chargeTO.setUserId(userId);
@@ -147,12 +148,20 @@ public class BillServiceTest {
 		chargeTO.setId("dskjhdskjshdl");
 
 		when(billRepo.findByUserIdMonthYear(userId, m, y)).thenReturn(Collections.singletonList(bill));
-		when(billRepo.save(ArgumentMatchers.any(Bill.class))).thenReturn(bill);
+		when(billRepo.save(ArgumentMatchers.any(Bill.class))).thenAnswer(new Answer<Bill>() {
+		    public Bill answer(InvocationOnMock invocation) {
+		        return (Bill)invocation.getArguments()[0];
+		    }
+		});
 
 		Bill billPersisted = billService.addChargeToBill(chargeTO);
 		Assert.assertEquals(billPersisted.getAmount(), amountCharge);
 		Assert.assertEquals(billPersisted.getPendingAmount(), (Double)(amountCharge/2));
-		
+	}
+
+	@Test(expected = ParamMandatoryException.class)
+	public void testAddChargeWithNullParam() {
+		billService.addChargeToBill(null);
 	}
 
 }

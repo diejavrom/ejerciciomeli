@@ -11,6 +11,8 @@ import com.meli.charge.exception.ParamMandatoryException;
 
 public class DateHelper {
 
+	public static final Long ONE_DAY = 24 * 60 * 60 * 1000l;
+
 	private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
 	private static DateHelper instance = new DateHelper();
 	private static SimpleDateFormat ISO8601DATEFORMAT = new SimpleDateFormat(DATE_FORMAT);
@@ -28,6 +30,10 @@ public class DateHelper {
 		} catch (ParseException e) {
 			throw new IllegalArgumentException(String.format("date '%s' debe estar en el formato %s", dateStr, DATE_FORMAT));
 		}
+	}
+
+	public String dateToString(Date date) {
+		return ISO8601DATEFORMAT.format(date);
 	}
 
 	public Integer getMonth(Date date) {

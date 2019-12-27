@@ -22,6 +22,13 @@ public class ChargeResponseEntityExceptionHandler {
 	}
 
 	@RequestMapping
+	@ExceptionHandler({PaymentExceedsTotalDebtException.class})
+	public ResponseEntity<ErrorResponse> handlePaymentExceedsTotalDebtException(PaymentExceedsTotalDebtException ex) {
+		HttpStatus badRequest = HttpStatus.BAD_REQUEST;
+		return new ResponseEntity<ErrorResponse>(new ErrorResponse(badRequest.value(), ex.getMessage()), badRequest);
+	}
+
+	@RequestMapping
 	@ExceptionHandler({ChargeTypeException.class})
 	public ResponseEntity<ErrorResponse> handleChargeTypeNotFoundException(ChargeTypeException ex) {
 		HttpStatus badRequest = HttpStatus.BAD_REQUEST;

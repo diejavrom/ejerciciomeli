@@ -93,7 +93,7 @@ public class BillService {
 			charge.updateWithChargeTOInfo(chargeTO);
 		}
 		
-		bill.addCharge(charge);
+		bill.updateCharge(charge);
 		
 		return billRepo.save(bill);
 	}

@@ -16,14 +16,14 @@ public class BillTest {
 		c1.setId("1234");
 		c1.setAmount(a1);
 		c1.setAmountPending(a1/2);
-		b.addCharge(c1);
+		b.updateCharge(c1);
 
 		Double a2 = 120d;
 		Charge c2 = new Charge();
 		c2.setId("1235");
 		c2.setAmount(a2);
 		c2.setAmountPending(a2/2);
-		b.addCharge(c2);
+		b.updateCharge(c2);
 
 		Assert.assertEquals(b.getAmount(), (Double) (a1+a2));
 		Assert.assertEquals(b.getPendingAmount(), (Double) ((a1+a2)/2));
@@ -38,7 +38,7 @@ public class BillTest {
 		String id1 = "1234";
 		c1.setId(id1);
 		c1.setAmount(20d);
-		b.addCharge(c1);
+		b.updateCharge(c1);
 		
 		String id2 = "1235";
 
@@ -54,7 +54,7 @@ public class BillTest {
 		String idCharge1 = "1234";
 		c1.setId(idCharge1);
 		c1.setAmount(20d);
-		b.addCharge(c1);
+		b.updateCharge(c1);
 
 		String idPayment = "kldild";
 		InfoPayment ip = new InfoPayment(idPayment, 100d);

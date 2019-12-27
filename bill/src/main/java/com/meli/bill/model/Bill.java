@@ -87,7 +87,7 @@ public class Bill {
 		this.year = year;
 	}
 
-	public void addCharge(Charge charge) {
+	public void updateCharge(Charge charge) {
 		removeCharge(charge);
 		getCharges().add(charge);
 		setAmount(getAmount() + charge.getAmount());

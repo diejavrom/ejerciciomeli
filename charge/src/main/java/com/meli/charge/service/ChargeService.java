@@ -18,6 +18,7 @@ import com.meli.charge.exception.ChargeAlreadyProcessedException;
 import com.meli.charge.exception.ChargeOutOfDateException;
 import com.meli.charge.exception.ChargeTypeException;
 import com.meli.charge.exception.ParamMandatoryException;
+import com.meli.charge.exception.PaymentExceedsTotalDebtException;
 import com.meli.charge.model.Charge;
 import com.meli.charge.model.ChargeType;
 import com.meli.charge.model.Payment;
@@ -105,8 +106,13 @@ public class ChargeService {
 		return chargeRepo.findByUserId(user_id);
 	}
 
-	public void payChargesWithPayment(Payment payment) {
-		//TODO: Chequear la deuda del usuario
+	public List<Charge> payChargesWithPayment(Payment payment) {
+		List<Charge> chargesPersistedList = new ArrayList<Charge>();
+		TotalPendingChargeResponse totalChargeAmountPending = totalChargeAmountPending(payment.getUserId());
+		if(totalChargeAmountPending.getTotalPendingCharge() < payment.getAmount()) {
+			throw new PaymentExceedsTotalDebtException(String.format("El pago con monto '%1$,.2f' excede la deuda del usuario '%2$,.2f'", payment.getAmount(), totalChargeAmountPending.getTotalPendingCharge()));
+		}
+
 		List<Charge> chargeWithDebt = chargeRepo.findAllWithDebt(payment.getUserId());
 		List<Charge> chargeListToPersist = new ArrayList<Charge>();
 		Double pagoAmount = payment.getAmount();
@@ -117,11 +123,13 @@ public class ChargeService {
 				charge.payAndRelate(payment, amountToUSe);
 				chargeListToPersist.add(charge);
 
-				chargeRepo.save(charge);
-				queueBillService.enqueueCharge(charge, payment, amountToUSe);
+				Charge chargePersisted = chargeRepo.save(charge);
+				chargesPersistedList.add(chargePersisted);
+				queueBillService.enqueueCharge(chargePersisted, payment, amountToUSe);
 			}
 		}
 
+		return chargesPersistedList;
 	}
 
 	public TotalChargeInfoResponse totalChargeInfo(Integer user_id) {
