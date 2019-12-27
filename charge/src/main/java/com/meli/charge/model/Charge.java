@@ -16,7 +16,7 @@ public class Charge {
 
 	private String id;
 	@Indexed(name="event_id_unique", unique = true)
-	private Integer event_id;
+	private Integer eventId;
 	private Integer userId;
 	private Double originalAmount;
 	private Double amount;
@@ -34,7 +34,7 @@ public class Charge {
 
 	public Charge(ChargeEvent chargeEvt, Double amountInDefCurrency, ChargeType chargeType) {
 		this();
-		setEvent_id(chargeEvt.getEvent_id());
+		setEventId(chargeEvt.getEvent_id());
 		setUserId(chargeEvt.getUser_id());
 		setOriginalAmount(chargeEvt.getAmount());
 		setAmount(amountInDefCurrency);
@@ -55,12 +55,12 @@ public class Charge {
 		this.id = id;
 	}
 
-	public Integer getEvent_id() {
-		return event_id;
+	public Integer getEventId() {
+		return eventId;
 	}
 
-	public void setEvent_id(Integer event_id) {
-		this.event_id = event_id;
+	public void setEventId(Integer eventId) {
+		this.eventId = eventId;
 	}
 
 	public Integer getUserId() {

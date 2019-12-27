@@ -12,7 +12,9 @@ import com.meli.payment.api.request.PaymentEvent;
 import com.meli.payment.exception.ParamMandatoryException;
 import com.meli.payment.exception.PaymentAlreadyProcessedException;
 import com.meli.payment.exception.PaymentExceedsTotalDebtException;
+import com.meli.payment.model.Charge;
 import com.meli.payment.model.Payment;
+import com.meli.payment.model.to.ChargeTO;
 import com.meli.payment.repository.PaymentRepository;
 
 @Service
@@ -37,10 +39,20 @@ public class PaymentService {
 		Double originalAmount = paymentEvt.getAmount();
 		Double amountInCurrencyDefault = currencyService.convertToCurrencyDefault(paymentEvt.getCurrency(), originalAmount);
 
-		checkDebtTotal(paymentEvt.getUser_id(), amountInCurrencyDefault);
-
+		List<ChargeTO> pendingCharges = chargeService.getPendingCharges(paymentEvt.getUser_id());
+		Double totalDebt = pendingCharges.stream().map(c -> c.getAmount()).reduce(0d, (v1,v2) -> v1+v2 ).doubleValue();
+		checkDebtTotal(totalDebt, amountInCurrencyDefault);
+	
 		Payment payment = new Payment(paymentEvt, amountInCurrencyDefault, idempKey);
-		
+		Double pagoAmount = payment.getAmount();
+		for(ChargeTO charge : pendingCharges) {
+			if(pagoAmount > 0) {
+				Double amountToUSe = Math.min(pagoAmount, charge.getAmountPending());
+				pagoAmount = pagoAmount - amountToUSe;
+				payment.getCharges().add(new Charge(charge, amountToUSe));
+			}
+		}
+
 		Payment paymentInserted = paymentRepo.insert(payment);
 
 		queueChargeService.enqueuePayment(paymentInserted);
@@ -48,9 +60,7 @@ public class PaymentService {
 		return paymentInserted;
 	}
 
-	private void checkDebtTotal(Integer userId, Double amountInCurrencyDefault) {
-		Double totalDebt = chargeService.getTotalCharge(userId);
-
+	private void checkDebtTotal(Double totalDebt, Double amountInCurrencyDefault) {
 		if(amountInCurrencyDefault > totalDebt) {
 			throw new PaymentExceedsTotalDebtException(String.format("El pago con monto '%1$,.2f' excede la deuda del usuario '%2$,.2f'", amountInCurrencyDefault, totalDebt));
 		}

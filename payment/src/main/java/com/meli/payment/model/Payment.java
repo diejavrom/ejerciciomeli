@@ -1,12 +1,12 @@
 package com.meli.payment.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
-
+import java.util.List;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
-
 import com.meli.payment.api.request.PaymentEvent;
 
 @Document(collection = "payments")
@@ -22,11 +22,14 @@ public class Payment implements Serializable {
 	private Double originalAmount;
 	private Date dateObj;
 	private Integer userId;
+	private List<Charge> charges;
 
 	public Payment() {
+		setCharges(new ArrayList<Charge>());
 	}
 
 	public Payment(PaymentEvent paymentEvt, Double amountInCurrencyDefault, String idempKey) {
+		this();
 		setAmount(amountInCurrencyDefault);
 		setOriginalAmount(paymentEvt.getAmount());
 		setCurrency(paymentEvt.getCurrency());
@@ -92,4 +95,13 @@ public class Payment implements Serializable {
 		this.idempKey = idempKey;
 	}
 
+	public List<Charge> getCharges() {
+		return charges;
+	}
+
+	public void setCharges(List<Charge> charges) {
+		this.charges = charges;
+	}
+
+	
 }

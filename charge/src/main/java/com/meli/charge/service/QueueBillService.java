@@ -55,7 +55,7 @@ public class QueueBillService {
 
 		public ChargeTO(Charge charge, Payment payment, Double amountToUSe) {
 			setId(charge.getId());
-			setEvent_id(charge.getEvent_id());
+			setEvent_id(charge.getEventId());
 			setUserId(charge.getUserId());
 			setAmount(charge.getAmount());
 			setAmountPending(charge.getAmountPending());

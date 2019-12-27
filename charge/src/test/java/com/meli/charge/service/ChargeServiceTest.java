@@ -28,6 +28,8 @@ import com.meli.charge.exception.PaymentExceedsTotalDebtException;
 import com.meli.charge.model.Charge;
 import com.meli.charge.model.ChargeType;
 import com.meli.charge.model.Payment;
+import com.meli.charge.model.to.ChargeTO;
+import com.meli.charge.model.to.PaymentTO;
 import com.meli.charge.repository.ChargeRepository;
 import com.meli.charge.repository.ChargeTypeRepository;
 
@@ -94,7 +96,7 @@ public class ChargeServiceTest {
 		Assert.assertEquals(currency, createdCharge.getCurrency());
 		Assert.assertEquals(category, createdCharge.getCategory());
 		Assert.assertEquals(eventType, createdCharge.getEvent_type());
-		Assert.assertEquals(event_id, createdCharge.getEvent_id());
+		Assert.assertEquals(event_id, createdCharge.getEventId());
 		Assert.assertEquals(userId, createdCharge.getUserId());
 			
 	}
@@ -129,10 +131,9 @@ public class ChargeServiceTest {
 		Integer event_id = 1234;
 		String eventType = "PUBLICIDAD";
 
-		Payment payment = new Payment();
+		PaymentTO payment = new PaymentTO();
 		payment.setAmount(amount);
 		payment.setUserId(userId);
-		payment.setCurrency(currency);
 	
 		ChargeEvent chargeEvt = new BuilderEvtCharge()
 				.withAmount(amount - 10)
@@ -160,11 +161,16 @@ public class ChargeServiceTest {
 		Integer event_id = 1234;
 		String eventType = "PUBLICIDAD";
 
-		Payment payment = new Payment();
+		PaymentTO payment = new PaymentTO();
 		payment.setId("ksaklasklaslk");
 		payment.setAmount(amount);
 		payment.setUserId(userId);
-		payment.setCurrency(currency);
+
+		String idCharge = "jkl";
+		ChargeTO chargeTO = new ChargeTO();
+		chargeTO.setAmountUsed(100d);
+		chargeTO.setId(idCharge);
+		payment.getCharges().add(chargeTO);
 
 		ChargeEvent chargeEvt = new BuilderEvtCharge()
 				.withAmount(2*amount)
@@ -178,6 +184,7 @@ public class ChargeServiceTest {
 		ChargeType chargeType = new ChargeType(eventType, "SERVICIOS");
 
 		Charge charge = new Charge(chargeEvt, chargeEvt.getAmount(), chargeType);
+		charge.setId(idCharge);
 
 		when(chargeRepo.findAllWithDebt(userId)).thenReturn(Collections.singletonList(charge));
 		when(chargeRepo.save(ArgumentMatchers.any(Charge.class))).thenAnswer(new Answer<Charge>() {
@@ -191,7 +198,6 @@ public class ChargeServiceTest {
 		Charge chargeResult = result.iterator().next();
 
 		Assert.assertEquals(chargeResult.getAmountPending(), amount);
-		Assert.assertTrue(chargeResult.getPayments().contains(payment));
 	}
 
 

@@ -9,7 +9,7 @@ import org.springframework.messaging.Message;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
-import com.meli.charge.model.Payment;
+import com.meli.charge.model.to.PaymentTO;
 import com.meli.charge.service.ChargeService;
 
 @Component
@@ -30,7 +30,7 @@ public class PaymentConsumer {
  
     	LOGGER.info("Se recibió el pago {}", paymentStrRep);
 
-		Payment payment = gson.fromJson(paymentStrRep, Payment.class);
+		PaymentTO payment = gson.fromJson(paymentStrRep, PaymentTO.class);
     	chargeService.payChargesWithPayment(payment);
     }
 

@@ -22,6 +22,8 @@ import com.meli.charge.exception.PaymentExceedsTotalDebtException;
 import com.meli.charge.model.Charge;
 import com.meli.charge.model.ChargeType;
 import com.meli.charge.model.Payment;
+import com.meli.charge.model.to.ChargeTO;
+import com.meli.charge.model.to.PaymentTO;
 import com.meli.charge.repository.ChargeRepository;
 import com.meli.charge.repository.ChargeTypeRepository;
 
@@ -29,7 +31,7 @@ import com.meli.charge.repository.ChargeTypeRepository;
 public class ChargeService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ChargeService.class);
-	
+
 	@Autowired
 	private ChargeRepository chargeRepo;
 
@@ -83,7 +85,8 @@ public class ChargeService {
 		if(evento.getDate() == null || evento.getDate().trim().isEmpty()) {
 			throw new ParamMandatoryException("date no puede ser vacío");
 		}
-		if(chargeRepo.existsById(evento.getEvent_id())) {
+		
+		if(!chargeRepo.findByEventId(evento.getEvent_id()).isEmpty()) {
 			throw new ChargeAlreadyProcessedException(String.format("El evento de cargo con ID '%d' ya fue procesado anteriormente", evento.getEvent_id()));
 		}
 	}
@@ -106,27 +109,19 @@ public class ChargeService {
 		return chargeRepo.findByUserId(user_id);
 	}
 
-	public List<Charge> payChargesWithPayment(Payment payment) {
+	public List<Charge> payChargesWithPayment(PaymentTO paymentTO) {
 		List<Charge> chargesPersistedList = new ArrayList<Charge>();
-		TotalPendingChargeResponse totalChargeAmountPending = totalChargeAmountPending(payment.getUserId());
-		if(totalChargeAmountPending.getTotalPendingCharge() < payment.getAmount()) {
-			throw new PaymentExceedsTotalDebtException(String.format("El pago con monto '%1$,.2f' excede la deuda del usuario '%2$,.2f'", payment.getAmount(), totalChargeAmountPending.getTotalPendingCharge()));
+		TotalPendingChargeResponse totalChargeAmountPending = totalChargeAmountPending(paymentTO.getUserId());
+		if(totalChargeAmountPending.getTotalPendingCharge() < paymentTO.getAmount()) {
+			throw new PaymentExceedsTotalDebtException(String.format("El pago con monto '%1$,.2f' excede la deuda del usuario '%2$,.2f'", paymentTO.getAmount(), totalChargeAmountPending.getTotalPendingCharge()));
 		}
 
-		List<Charge> chargeWithDebt = chargeRepo.findAllWithDebt(payment.getUserId());
-		List<Charge> chargeListToPersist = new ArrayList<Charge>();
-		Double pagoAmount = payment.getAmount();
-		for(Charge charge : chargeWithDebt) {
-			if(pagoAmount > 0) {
-				Double amountToUSe = Math.min(pagoAmount, charge.getAmountPending());
-				pagoAmount = pagoAmount - amountToUSe;
-				charge.payAndRelate(payment, amountToUSe);
-				chargeListToPersist.add(charge);
-
-				Charge chargePersisted = chargeRepo.save(charge);
-				chargesPersistedList.add(chargePersisted);
-				queueBillService.enqueueCharge(chargePersisted, payment, amountToUSe);
-			}
+		Payment payment = new Payment(paymentTO.getId(), paymentTO.getAmount(), paymentTO.getUserId());
+		for(ChargeTO chargeTO : paymentTO.getCharges()) {
+			Charge charge = chargeRepo.findById(chargeTO.getId()).get();
+			charge.payAndRelate(payment, chargeTO.getAmountUsed());
+			Charge chargePersisted = chargeRepo.save(charge);
+			queueBillService.enqueueCharge(chargePersisted, payment, chargeTO.getAmountUsed());
 		}
 
 		return chargesPersistedList;
@@ -161,6 +156,10 @@ public class ChargeService {
 		} else {
 			return chargeType.iterator().next();
 		}
+	}
+
+	public List<Charge> listPendingByUserId(Integer user_id) {
+		return chargeRepo.findAllWithDebt(user_id);
 	}
 
 }

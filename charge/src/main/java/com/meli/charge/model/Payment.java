@@ -10,6 +10,16 @@ public class Payment implements Serializable {
 	private Double amount;
 	private Integer userId;
 
+	public Payment(String id, Double amount, Integer userId) {
+		super();
+		this.id = id;
+		this.amount = amount;
+		this.userId = userId;
+	}
+
+	public Payment() {
+	}
+
 	public String getId() {
 		return id;
 	}
