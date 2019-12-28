@@ -1,28 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
-		<item key="selection" value="restTemplate"/>
+		<item key="selection" value="eventId"/>
 		<item key="wrap" value="true"/>
 		<item key="casesensitive" value="false"/>
 		<item key="wholeword" value="false"/>
 		<item key="incremental" value="false"/>
 		<item key="isRegEx" value="false"/>
 		<list key="findhistory">
-			<item value="restTemplate"/>
-			<item value="gson"/>
-			<item value="dateObj"/>
-			<item value="month"/>
-			<item value="userId"/>
-			<item value="flapdoodle"/>
-			<item value="testdjr.azurecr.io"/>
-			<item value="azurecontainer"/>
-			<item value="com.microsoft.azure"/>
-			<item value="registry"/>
-			<item value=""/>
-			<item value="jms"/>
-			<item value="mq"/>
-			<item value="spring-boot-starter-activemq"/>
-			<item value="active"/>
+			<item value="eventId"/>
+			<item value="reci"/>
+			<item value="rece"/>
+			<item value="checkPayment"/>
+			<item value="new ChargeE"/>
+			<item value="new Charge"/>
+			<item value="que"/>
+			<item value="Argum"/>
+			<item value="any"/>
+			<item value="doNo"/>
+			<item value="@SpringBootTest"/>
+			<item value="answe"/>
+			<item value="mockito"/>
+			<item value="getPEndin"/>
+			<item value="queueService"/>
 		</list>
 		<list key="replacehistory">
 		</list>

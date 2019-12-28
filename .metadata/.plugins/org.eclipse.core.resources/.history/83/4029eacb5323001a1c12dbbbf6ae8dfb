@@ -1,5 +1,0 @@
-package com.meli.payment.exception;
-
-public class PaymentAlreadyProcessedException {
-
-}

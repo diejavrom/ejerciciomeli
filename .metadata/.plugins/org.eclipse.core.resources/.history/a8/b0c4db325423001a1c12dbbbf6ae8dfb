@@ -1,9 +1,0 @@
-package com.meli.payment.exception;
-
-public class PaymentAlreadyProcessedException extends RuntimeException {
-
-	public PaymentAlreadyProcessedException(String msg) {
-		super(msg);
-	}
-
-}

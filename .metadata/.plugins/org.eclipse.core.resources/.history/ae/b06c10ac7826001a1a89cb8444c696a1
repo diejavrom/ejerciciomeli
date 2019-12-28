@@ -1,9 +1,0 @@
-package com.meli.charge;
-
-import org.springframework.stereotype.Service;
-
-@Service
-public class FacturaService {
-
-	
-}

@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <aop-reference-model>
 <aop-project name="payment"/>
+<aop-project name="bill"/>
 <aop-project name="charge"/>
+<aop-project name="status"/>
+<aop-project name="currency"/>
 </aop-reference-model>

@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?><testrun name="CurrencyApplicationTests" project="currency" tests="1" started="1" failures="0" errors="0" ignored="0">
-  <testsuite name="com.meli.currency.CurrencyApplicationTests" time="0.003" displayname="CurrencyApplicationTests" uniqueid="[engine:junit-jupiter]/[class:com.meli.currency.CurrencyApplicationTests]">
-    <testcase name="contextLoads" classname="com.meli.currency.CurrencyApplicationTests" time="0.003" displayname="contextLoads()" uniqueid="[engine:junit-jupiter]/[class:com.meli.currency.CurrencyApplicationTests]/[method:contextLoads()]"/>
-  </testsuite>
-</testrun>

@@ -1,9 +1,0 @@
-package com.meli.charge.listener;
-
-import org.springframework.stereotype.Component;
-
-@Component
-@Jms
-public class PaymentConsumer {
-
-}

@@ -1,5 +1,0 @@
-package com.meli.payment.repository;
-
-public class PaymentRepository {
-
-}

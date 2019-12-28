@@ -40,16 +40,16 @@ public class PaymentService {
 		Double amountInCurrencyDefault = currencyService.convertToCurrencyDefault(paymentEvt.getCurrency(), originalAmount);
 
 		List<ChargeTO> pendingCharges = chargeService.getPendingCharges(paymentEvt.getUser_id());
-		Double totalDebt = pendingCharges.stream().map(c -> c.getAmount()).reduce(0d, (v1,v2) -> v1+v2 ).doubleValue();
+		Double totalDebt = pendingCharges.stream().map(c -> c.getAmountPending()).reduce(0d, (v1,v2) -> v1+v2 ).doubleValue();
 		checkDebtTotal(totalDebt, amountInCurrencyDefault);
 	
 		Payment payment = new Payment(paymentEvt, amountInCurrencyDefault, idempKey);
 		Double pagoAmount = payment.getAmount();
-		for(ChargeTO charge : pendingCharges) {
+		for(ChargeTO chargeTO : pendingCharges) {
 			if(pagoAmount > 0) {
-				Double amountToUSe = Math.min(pagoAmount, charge.getAmountPending());
+				Double amountToUSe = Math.min(pagoAmount, chargeTO.getAmountPending());
 				pagoAmount = pagoAmount - amountToUSe;
-				payment.getCharges().add(new Charge(charge, amountToUSe));
+				payment.getCharges().add(new Charge(chargeTO, amountToUSe));
 			}
 		}
 

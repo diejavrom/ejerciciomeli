@@ -3,9 +3,11 @@ package com.meli.charge.service;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -23,6 +25,8 @@ import org.springframework.test.context.ContextConfiguration;
 
 import com.meli.charge.DateHelper;
 import com.meli.charge.api.request.ChargeEvent;
+import com.meli.charge.api.response.TotalChargeInfoResponse;
+import com.meli.charge.api.response.TotalPendingChargeResponse;
 import com.meli.charge.exception.ChargeOutOfDateException;
 import com.meli.charge.exception.PaymentExceedsTotalDebtException;
 import com.meli.charge.model.Charge;
@@ -76,7 +80,7 @@ public class ChargeServiceTest {
 		    .withEvent_type(eventType)
 		    .build();
 
-		ChargeType chargeType = new ChargeType(eventType, category);
+		ChargeType chargeType = new ChargeType(category, eventType);
 
 		when(chargeRepo.insert(ArgumentMatchers.any(Charge.class))).thenAnswer(new Answer<Charge>() {
 		    public Charge answer(InvocationOnMock invocation) {
@@ -144,7 +148,7 @@ public class ChargeServiceTest {
 			    .withEvent_type(eventType)
 			    .build();
 		
-		ChargeType chargeType = new ChargeType(eventType, "SERVICIOS");
+		ChargeType chargeType = new ChargeType("SERVICIOS", eventType);
 
 		Charge charge = new Charge(chargeEvt, chargeEvt.getAmount(), chargeType);
 
@@ -181,11 +185,12 @@ public class ChargeServiceTest {
 			    .withEvent_type(eventType)
 			    .build();
 
-		ChargeType chargeType = new ChargeType(eventType, "SERVICIOS");
+		ChargeType chargeType = new ChargeType("SERVICIOS", eventType);
 
 		Charge charge = new Charge(chargeEvt, chargeEvt.getAmount(), chargeType);
 		charge.setId(idCharge);
 
+		when(chargeRepo.findById(idCharge)).thenReturn(Optional.of(charge));
 		when(chargeRepo.findAllWithDebt(userId)).thenReturn(Collections.singletonList(charge));
 		when(chargeRepo.save(ArgumentMatchers.any(Charge.class))).thenAnswer(new Answer<Charge>() {
 		    public Charge answer(InvocationOnMock invocation) {
@@ -200,7 +205,99 @@ public class ChargeServiceTest {
 		Assert.assertEquals(chargeResult.getAmountPending(), amount);
 	}
 
+	@Test
+	public void testTotalChargeInfo() {
+		Integer userId = 12345;
+		String currency = "ARS";
+		Double amount = 100d;
+		Integer event_id = 1234;
+		String eventType = "PUBLICIDAD";
 
+		ChargeEvent chargeEvt = new BuilderEvtCharge()
+				.withAmount(2*amount)
+			    .withCurrency(currency)
+			    .withDate("2019-12-16T03:00:00.000+0000")
+			    .withEvent_id(event_id)
+			    .withUserId(userId)
+			    .withEvent_type(eventType)
+			    .build();
+
+		ChargeType chargeType = new ChargeType("SERVICIOS", eventType);
+
+		List<Charge> chargeResult = new ArrayList<Charge>();
+		Charge charge = new Charge(chargeEvt, chargeEvt.getAmount(), chargeType);
+		chargeResult.add(charge);
+
+		chargeEvt = new BuilderEvtCharge()
+				.withAmount(2*amount)
+			    .withCurrency(currency)
+			    .withDate("2019-12-18T03:00:00.000+0000")
+			    .withEvent_id(event_id)
+			    .withUserId(userId)
+			    .withEvent_type(eventType)
+			    .build();
+
+		Charge charge2 = new Charge(chargeEvt, chargeEvt.getAmount()*3, chargeType);
+		chargeResult.add(charge2);
+
+		Double totalExpected = chargeResult.stream().map(ch -> ch.getAmount()).reduce(0d, (c1,c2) -> c1+c2);
+
+		when(chargeRepo.findByUserId(userId)).thenReturn(chargeResult);
+
+		TotalChargeInfoResponse totalChargeInfo = chargeService.totalChargeInfo(userId);
+
+		Assert.assertEquals(totalChargeInfo.getTotalCharge(), totalExpected);
+		Assert.assertEquals(totalChargeInfo.getChargesCount(), (Integer)chargeResult.size());
+		Assert.assertEquals(totalChargeInfo.getLastCharge(), charge2.getDateObj());
+		
+	}
+
+	@Test
+	public void testTotalChargeWithDebtInfo() {
+		Integer userId = 12345;
+		String currency = "ARS";
+		Double amount = 100d;
+		Integer event_id = 1234;
+		String eventType = "PUBLICIDAD";
+
+		ChargeEvent chargeEvt = new BuilderEvtCharge()
+				.withAmount(2*amount)
+			    .withCurrency(currency)
+			    .withDate("2019-12-16T03:00:00.000+0000")
+			    .withEvent_id(event_id)
+			    .withUserId(userId)
+			    .withEvent_type(eventType)
+			    .build();
+
+		ChargeType chargeType = new ChargeType("SERVICIOS", eventType);
+
+		List<Charge> chargeResult = new ArrayList<Charge>();
+		Charge charge = new Charge(chargeEvt, chargeEvt.getAmount(), chargeType);
+		chargeResult.add(charge);
+
+		chargeEvt = new BuilderEvtCharge()
+				.withAmount(2*amount)
+			    .withCurrency(currency)
+			    .withDate("2019-12-18T03:00:00.000+0000")
+			    .withEvent_id(event_id)
+			    .withUserId(userId)
+			    .withEvent_type(eventType)
+			    .build();
+
+		Charge charge2 = new Charge(chargeEvt, chargeEvt.getAmount()*3, chargeType);
+		chargeResult.add(charge2);
+
+		Double totalExpected = chargeResult.stream().map(ch -> ch.getAmountPending()).reduce(0d, (c1,c2) -> c1+c2);
+
+		when(chargeRepo.findAllWithDebt(userId)).thenReturn(chargeResult);
+
+		TotalPendingChargeResponse totalChargeInfo = chargeService.totalChargeAmountPending(userId);
+
+		Assert.assertEquals(totalChargeInfo.getTotalPendingCharge(), totalExpected);
+		
+	}
+
+	
 	private static class BuilderEvtCharge {
 		
 		private Double amount;

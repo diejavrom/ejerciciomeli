@@ -121,6 +121,7 @@ public class ChargeService {
 			Charge charge = chargeRepo.findById(chargeTO.getId()).get();
 			charge.payAndRelate(payment, chargeTO.getAmountUsed());
 			Charge chargePersisted = chargeRepo.save(charge);
+			chargesPersistedList.add(chargePersisted);
 			queueBillService.enqueueCharge(chargePersisted, payment, chargeTO.getAmountUsed());
 		}
 

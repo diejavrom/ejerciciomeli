@@ -1,8 +1,0 @@
-package com.meli.charge.repository;
-
-import org.springframework.data.mongodb.repository.MongoRepository;
-import com.meli.charge.model.Charge;
-
-public interface ChargeRepository extends MongoRepository<Charge, Integer>{
-
-}

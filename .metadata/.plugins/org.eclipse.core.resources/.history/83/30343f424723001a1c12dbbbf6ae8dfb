@@ -1,9 +1,0 @@
-package com.meli.payment.model;
-
-public class Payment {
-
-	private String currency;
-	private Double amount;
-	private Integer user_id;
-
-}
