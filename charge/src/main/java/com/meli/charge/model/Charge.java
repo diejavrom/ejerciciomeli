@@ -10,6 +10,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.meli.charge.DateHelper;
 import com.meli.charge.api.request.ChargeEvent;
+import com.meli.charge.exception.ChargeTypeException;
+import com.meli.charge.model.enums.EChargeType;
 
 @Document(collection = "charges")
 public class Charge {
@@ -32,18 +34,22 @@ public class Charge {
 		this.payments = new ArrayList<Payment>();
 	}
 
-	public Charge(ChargeEvent chargeEvt, Double amountInDefCurrency, ChargeType chargeType) {
+	public Charge(ChargeEvent chargeEvt, Double amountInDefCurrency) {
 		this();
 		setEventId(chargeEvt.getEvent_id());
 		setUserId(chargeEvt.getUser_id());
 		setOriginalAmount(chargeEvt.getAmount());
 		setAmount(amountInDefCurrency);
 		setAmountPending(amountInDefCurrency);
-		setEvent_type(chargeEvt.getEvent_type());
 		setDate(chargeEvt.getDate());
 		setDateObj(DateHelper.getInstance().stringToTimestamp(chargeEvt.getDate()));
 		setCurrency(chargeEvt.getCurrency());
-		setCategory(chargeType.getCategory());
+		setEvent_type(chargeEvt.getEvent_type());
+		EChargeType eChargeType = EChargeType.getByName(chargeEvt.getEvent_type());
+		if(eChargeType == null) {
+			throw new ChargeTypeException(String.format("event_type '%s' inválido", chargeEvt.getEvent_type()));
+		}
+		setCategory(eChargeType.getCategory().toString());
 	}
 
 	@Id

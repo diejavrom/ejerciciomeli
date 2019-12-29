@@ -164,4 +164,6 @@ public class BillServiceTest {
 		billService.receiveCharge(null);
 	}
 
+	//TODO: test getBillsByUserIdAndRange
+
 }

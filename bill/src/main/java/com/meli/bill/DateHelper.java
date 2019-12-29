@@ -54,7 +54,7 @@ public class DateHelper {
 		}
 	}
 
-	public boolean isMenorOIgual(Integer mes1, Integer anio1, Integer mes2, Integer anio2) {
+	public boolean lowerThanEqual(Integer mes1, Integer anio1, Integer mes2, Integer anio2) {
 		return anio1 < anio2 || (anio1.equals(anio2) && mes1 <= mes2);  
 	}
 

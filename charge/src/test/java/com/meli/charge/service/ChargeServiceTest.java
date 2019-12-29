@@ -21,6 +21,8 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.test.context.ContextConfiguration;
 
 import com.meli.charge.DateHelper;
@@ -30,12 +32,11 @@ import com.meli.charge.api.response.TotalPendingChargeResponse;
 import com.meli.charge.exception.ChargeOutOfDateException;
 import com.meli.charge.exception.PaymentExceedsTotalDebtException;
 import com.meli.charge.model.Charge;
-import com.meli.charge.model.ChargeType;
 import com.meli.charge.model.Payment;
+import com.meli.charge.model.enums.EChargeType;
 import com.meli.charge.model.to.ChargeTO;
 import com.meli.charge.model.to.PaymentTO;
 import com.meli.charge.repository.ChargeRepository;
-import com.meli.charge.repository.ChargeTypeRepository;
 
 @RunWith(MockitoJUnitRunner.class)
 @ContextConfiguration(classes = ChargeServiceTest.class)
@@ -47,9 +48,6 @@ public class ChargeServiceTest {
 
 	@Mock
 	private ChargeRepository chargeRepo;
-
-	@Mock
-	private ChargeTypeRepository chargeTypeRepo;
 
 	@Mock
 	private QueueBillService queueBillService;
@@ -68,8 +66,8 @@ public class ChargeServiceTest {
 		String currency = "ARS";
 		Integer event_id = 1234;
 		Integer userId = 12223;
-		String eventType = "PUBLICIDAD";
-		String category = "SERVICIOS";
+		String eventType = EChargeType.PUBLICIDAD.getName();
+		String category = EChargeType.PUBLICIDAD.getCategory().name();
 
 		ChargeEvent chargeEvt = new BuilderEvtCharge()
 			.withAmount(amount)
@@ -80,8 +78,6 @@ public class ChargeServiceTest {
 		    .withEvent_type(eventType)
 		    .build();
 
-		ChargeType chargeType = new ChargeType(category, eventType);
-
 		when(chargeRepo.insert(ArgumentMatchers.any(Charge.class))).thenAnswer(new Answer<Charge>() {
 		    public Charge answer(InvocationOnMock invocation) {
 		        return (Charge)invocation.getArguments()[0];
@@ -89,7 +85,6 @@ public class ChargeServiceTest {
 		});
 
 		when(currencyService.convertToCurrencyDefault(currency, amount)).thenReturn(amount);
-		when(chargeTypeRepo.findByType(ArgumentMatchers.anyString())).thenReturn(Collections.singletonList(chargeType));
 
 		doNothing().when(queueBillService).enqueueCharge(ArgumentMatchers.any(Charge.class), ArgumentMatchers.any(Payment.class), ArgumentMatchers.any(Double.class));
 
@@ -133,7 +128,7 @@ public class ChargeServiceTest {
 		String currency = "ARS";
 		double amount = 100d;
 		Integer event_id = 1234;
-		String eventType = "PUBLICIDAD";
+		String eventType = EChargeType.PUBLICIDAD.getName();
 
 		PaymentTO payment = new PaymentTO();
 		payment.setAmount(amount);
@@ -148,11 +143,9 @@ public class ChargeServiceTest {
 			    .withEvent_type(eventType)
 			    .build();
 		
-		ChargeType chargeType = new ChargeType("SERVICIOS", eventType);
+		Charge charge = new Charge(chargeEvt, chargeEvt.getAmount());
 
-		Charge charge = new Charge(chargeEvt, chargeEvt.getAmount(), chargeType);
-
-		when(chargeRepo.findAllWithDebt(userId)).thenReturn(Collections.singletonList(charge));
+		when(chargeRepo.findAllWithDebt(userId, Sort.by(Direction.ASC, "dateObj"))).thenReturn(Collections.singletonList(charge));
 
 		chargeService.payChargesWithPayment(payment);
 	}
@@ -163,7 +156,7 @@ public class ChargeServiceTest {
 		String currency = "ARS";
 		Double amount = 100d;
 		Integer event_id = 1234;
-		String eventType = "PUBLICIDAD";
+		String eventType = EChargeType.PUBLICIDAD.getName();
 
 		PaymentTO payment = new PaymentTO();
 		payment.setId("ksaklasklaslk");
@@ -185,13 +178,11 @@ public class ChargeServiceTest {
 			    .withEvent_type(eventType)
 			    .build();
 
-		ChargeType chargeType = new ChargeType("SERVICIOS", eventType);
-
-		Charge charge = new Charge(chargeEvt, chargeEvt.getAmount(), chargeType);
+		Charge charge = new Charge(chargeEvt, chargeEvt.getAmount());
 		charge.setId(idCharge);
 
 		when(chargeRepo.findById(idCharge)).thenReturn(Optional.of(charge));
-		when(chargeRepo.findAllWithDebt(userId)).thenReturn(Collections.singletonList(charge));
+		when(chargeRepo.findAllWithDebt(userId, Sort.by(Direction.ASC, "dateObj"))).thenReturn(Collections.singletonList(charge));
 		when(chargeRepo.save(ArgumentMatchers.any(Charge.class))).thenAnswer(new Answer<Charge>() {
 		    public Charge answer(InvocationOnMock invocation) {
 		        return (Charge)invocation.getArguments()[0];
@@ -211,7 +202,7 @@ public class ChargeServiceTest {
 		String currency = "ARS";
 		Double amount = 100d;
 		Integer event_id = 1234;
-		String eventType = "PUBLICIDAD";
+		String eventType = EChargeType.PUBLICIDAD.getName();
 
 		ChargeEvent chargeEvt = new BuilderEvtCharge()
 				.withAmount(2*amount)
@@ -222,10 +213,9 @@ public class ChargeServiceTest {
 			    .withEvent_type(eventType)
 			    .build();
 
-		ChargeType chargeType = new ChargeType("SERVICIOS", eventType);
 
 		List<Charge> chargeResult = new ArrayList<Charge>();
-		Charge charge = new Charge(chargeEvt, chargeEvt.getAmount(), chargeType);
+		Charge charge = new Charge(chargeEvt, chargeEvt.getAmount());
 		chargeResult.add(charge);
 
 		chargeEvt = new BuilderEvtCharge()
@@ -237,7 +227,7 @@ public class ChargeServiceTest {
 			    .withEvent_type(eventType)
 			    .build();
 
-		Charge charge2 = new Charge(chargeEvt, chargeEvt.getAmount()*3, chargeType);
+		Charge charge2 = new Charge(chargeEvt, chargeEvt.getAmount()*3);
 		chargeResult.add(charge2);
 
 		Double totalExpected = chargeResult.stream().map(ch -> ch.getAmount()).reduce(0d, (c1,c2) -> c1+c2);
@@ -258,7 +248,7 @@ public class ChargeServiceTest {
 		String currency = "ARS";
 		Double amount = 100d;
 		Integer event_id = 1234;
-		String eventType = "PUBLICIDAD";
+		String eventType = EChargeType.PUBLICIDAD.getName();
 
 		ChargeEvent chargeEvt = new BuilderEvtCharge()
 				.withAmount(2*amount)
@@ -269,10 +259,8 @@ public class ChargeServiceTest {
 			    .withEvent_type(eventType)
 			    .build();
 
-		ChargeType chargeType = new ChargeType("SERVICIOS", eventType);
-
 		List<Charge> chargeResult = new ArrayList<Charge>();
-		Charge charge = new Charge(chargeEvt, chargeEvt.getAmount(), chargeType);
+		Charge charge = new Charge(chargeEvt, chargeEvt.getAmount());
 		chargeResult.add(charge);
 
 		chargeEvt = new BuilderEvtCharge()
@@ -284,12 +272,12 @@ public class ChargeServiceTest {
 			    .withEvent_type(eventType)
 			    .build();
 
-		Charge charge2 = new Charge(chargeEvt, chargeEvt.getAmount()*3, chargeType);
+		Charge charge2 = new Charge(chargeEvt, chargeEvt.getAmount()*3);
 		chargeResult.add(charge2);
 
 		Double totalExpected = chargeResult.stream().map(ch -> ch.getAmountPending()).reduce(0d, (c1,c2) -> c1+c2);
 
-		when(chargeRepo.findAllWithDebt(userId)).thenReturn(chargeResult);
+		when(chargeRepo.findAllWithDebt(userId, Sort.by(Direction.ASC, "dateObj"))).thenReturn(chargeResult);
 
 		TotalPendingChargeResponse totalChargeInfo = chargeService.totalChargeAmountPending(userId);
 

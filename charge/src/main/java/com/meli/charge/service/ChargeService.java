@@ -8,6 +8,8 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
 import com.meli.charge.DateHelper;
@@ -16,16 +18,13 @@ import com.meli.charge.api.response.TotalChargeInfoResponse;
 import com.meli.charge.api.response.TotalPendingChargeResponse;
 import com.meli.charge.exception.ChargeAlreadyProcessedException;
 import com.meli.charge.exception.ChargeOutOfDateException;
-import com.meli.charge.exception.ChargeTypeException;
 import com.meli.charge.exception.ParamMandatoryException;
 import com.meli.charge.exception.PaymentExceedsTotalDebtException;
 import com.meli.charge.model.Charge;
-import com.meli.charge.model.ChargeType;
 import com.meli.charge.model.Payment;
 import com.meli.charge.model.to.ChargeTO;
 import com.meli.charge.model.to.PaymentTO;
 import com.meli.charge.repository.ChargeRepository;
-import com.meli.charge.repository.ChargeTypeRepository;
 
 @Service
 public class ChargeService {
@@ -37,9 +36,6 @@ public class ChargeService {
 
 	@Autowired
 	private CurrencyService currencyService;
-
-	@Autowired
-	private ChargeTypeRepository chargeTypeRepo;
 
 	@Autowired
 	private QueueBillService queueBillService;
@@ -54,7 +50,7 @@ public class ChargeService {
 	
 		Double amountInDefCurrency = currencyService.convertToCurrencyDefault(chargeEvt.getCurrency(), chargeEvt.getAmount());
 
-		Charge charge = new Charge(chargeEvt, amountInDefCurrency, getChargeType(chargeEvt.getEvent_type()));
+		Charge charge = new Charge(chargeEvt, amountInDefCurrency);
 
 		Charge chargePersisted = chargeRepo.insert(charge);
 
@@ -140,7 +136,7 @@ public class ChargeService {
 	}
 
 	public TotalPendingChargeResponse totalChargeAmountPending(Integer user_id) {
-		List<Charge> allCharge = chargeRepo.findAllWithDebt(user_id);
+		List<Charge> allCharge = findAllWithDebtSorted(user_id);
 		double totalCharge = 0d;
 		if(!allCharge.isEmpty()) {
 			totalCharge = allCharge.stream().map(c -> c.getAmountPending()).reduce(0d, (ap1 , ap2) -> ap1 + ap2).doubleValue();
@@ -148,19 +144,12 @@ public class ChargeService {
 		return new TotalPendingChargeResponse(user_id, totalCharge);
 	}
 
-	private ChargeType getChargeType(String type) {
-		List<ChargeType> chargeType = chargeTypeRepo.findByType(type);
-		if(chargeType.isEmpty()) {
-			throw new ChargeTypeException(String.format("No se pudo encontrar un tipo de cargo asociado a %s", type)); 
-		} else if(chargeType.size() > 1){
-			throw new ChargeTypeException(String.format("Existe más de un tipo de cargo configurado para %s", type)); 
-		} else {
-			return chargeType.iterator().next();
-		}
+	private List<Charge> findAllWithDebtSorted(Integer user_id) {
+		return chargeRepo.findAllWithDebt(user_id, Sort.by(Direction.ASC, "dateObj"));
 	}
 
 	public List<Charge> listPendingByUserId(Integer user_id) {
-		return chargeRepo.findAllWithDebt(user_id);
+		return findAllWithDebtSorted(user_id);
 	}
 
 }

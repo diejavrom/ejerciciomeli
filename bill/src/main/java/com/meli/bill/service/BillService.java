@@ -64,6 +64,40 @@ public class BillService {
 		return billRepo.findByUserId(user_id);
 	}
 
+	public List<Bill> getBillsByUserIdAndRange(Integer userId, Integer monthFrom, Integer yearFrom, Integer monthTo, Integer yearTo) {
+
+		checkParams(userId, monthFrom, yearFrom, monthTo, yearTo);
+
+		return billRepo.findByUserIdAndRange(userId, monthFrom, yearFrom, monthTo, yearTo);
+	}
+
+	private void checkParams(Integer userId, Integer monthFrom, Integer yearFrom, Integer monthTo, Integer yearTo) {
+		if(userId == null) {
+			throw new ParamMandatoryException("El id de usuario no puede ser null");
+		}
+		if(monthFrom == null) {
+			throw new ParamMandatoryException("month_from no puede ser null");
+		}
+		if(yearFrom == null) {
+			throw new ParamMandatoryException("year_from no puede ser null");
+		}
+		if(monthTo == null) {
+			throw new ParamMandatoryException("month_to no puede ser null");
+		}
+		if(yearTo == null) {
+			throw new ParamMandatoryException("year_to from no puede ser null");
+		}
+		if(monthFrom < 1 || monthFrom > 12) {
+			throw new ParamMandatoryException("month_from debe estar entre 1 y 12");
+		}
+		if(monthTo < 1 || monthTo > 12) {
+			throw new ParamMandatoryException("month_to debe estar entre 1 y 12");
+		}
+		if(!DateHelper.getInstance().lowerThanEqual(monthFrom, yearFrom, monthTo, yearTo)) {
+			throw new ParamMandatoryException(String.format("month_from/year_from debe '%d/%d' ser menor o igual que 'month_to/year_to' %d/%d", monthFrom, yearFrom, monthTo, yearTo));
+		}
+	}
+
 	public Bill receiveCharge(ChargeTO chargeTO) {
 
 		checkChargeParam(chargeTO);
