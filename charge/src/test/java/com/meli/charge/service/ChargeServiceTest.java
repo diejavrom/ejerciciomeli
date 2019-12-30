@@ -28,7 +28,7 @@ import org.springframework.test.context.ContextConfiguration;
 import com.meli.charge.DateHelper;
 import com.meli.charge.api.request.ChargeEvent;
 import com.meli.charge.api.response.TotalChargeInfoResponse;
-import com.meli.charge.api.response.TotalPendingChargeResponse;
+import com.meli.charge.api.response.TotalAmountPendingChargeResponse;
 import com.meli.charge.exception.ChargeOutOfDateException;
 import com.meli.charge.exception.PaymentExceedsTotalDebtException;
 import com.meli.charge.model.Charge;
@@ -279,7 +279,7 @@ public class ChargeServiceTest {
 
 		when(chargeRepo.findAllWithDebt(userId, Sort.by(Direction.ASC, "dateObj"))).thenReturn(chargeResult);
 
-		TotalPendingChargeResponse totalChargeInfo = chargeService.totalChargeAmountPending(userId);
+		TotalAmountPendingChargeResponse totalChargeInfo = chargeService.totalChargeAmountPending(userId);
 
 		Assert.assertEquals(totalChargeInfo.getTotalPendingCharge(), totalExpected);
 		

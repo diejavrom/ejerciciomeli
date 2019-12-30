@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 import com.meli.charge.DateHelper;
 import com.meli.charge.api.request.ChargeEvent;
 import com.meli.charge.api.response.TotalChargeInfoResponse;
-import com.meli.charge.api.response.TotalPendingChargeResponse;
+import com.meli.charge.api.response.TotalAmountPendingChargeResponse;
 import com.meli.charge.exception.ChargeAlreadyProcessedException;
 import com.meli.charge.exception.ChargeOutOfDateException;
 import com.meli.charge.exception.ParamMandatoryException;
@@ -107,7 +107,7 @@ public class ChargeService {
 
 	public List<Charge> payChargesWithPayment(PaymentTO paymentTO) {
 		List<Charge> chargesPersistedList = new ArrayList<Charge>();
-		TotalPendingChargeResponse totalChargeAmountPending = totalChargeAmountPending(paymentTO.getUserId());
+		TotalAmountPendingChargeResponse totalChargeAmountPending = totalChargeAmountPending(paymentTO.getUserId());
 		if(totalChargeAmountPending.getTotalPendingCharge() < paymentTO.getAmount()) {
 			throw new PaymentExceedsTotalDebtException(String.format("El pago con monto '%1$,.2f' excede la deuda del usuario '%2$,.2f'", paymentTO.getAmount(), totalChargeAmountPending.getTotalPendingCharge()));
 		}
@@ -135,13 +135,13 @@ public class ChargeService {
 		return new TotalChargeInfoResponse(user_id, totalCharge, lastCharge, allCharge.size());
 	}
 
-	public TotalPendingChargeResponse totalChargeAmountPending(Integer user_id) {
+	public TotalAmountPendingChargeResponse totalChargeAmountPending(Integer user_id) {
 		List<Charge> allCharge = findAllWithDebtSorted(user_id);
 		double totalCharge = 0d;
 		if(!allCharge.isEmpty()) {
 			totalCharge = allCharge.stream().map(c -> c.getAmountPending()).reduce(0d, (ap1 , ap2) -> ap1 + ap2).doubleValue();
 		}
-		return new TotalPendingChargeResponse(user_id, totalCharge);
+		return new TotalAmountPendingChargeResponse(user_id, totalCharge);
 	}
 
 	private List<Charge> findAllWithDebtSorted(Integer user_id) {

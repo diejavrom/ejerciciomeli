@@ -13,6 +13,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.meli.status.api.response.StatusUsuarioResponse;
 import com.meli.status.service.StatusService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
+
 @RestController
 @RequestMapping(value = "/status")
 public class StatusRestController {
@@ -20,7 +26,21 @@ public class StatusRestController {
 	@Autowired
 	private StatusService statusService;
 
-    @RequestMapping(value = "/{user_id}", method = RequestMethod.GET)
+    @RequestMapping(value = "/{user_id}", method = RequestMethod.POST)
+    @Operation(
+    		summary = "Devuelve el estado de deuda del usuario.",
+    		responses = {
+    			@ApiResponse(
+    				description = "estado del usuario",
+    				responseCode = "200",
+    				content = @Content (
+    					schema = @Schema(implementation = StatusUsuarioResponse.class),
+    					mediaType = "application/json"
+    				)
+    			 ),
+    			@ApiResponse(responseCode = "500", description = "ante un error inesperado")
+    		}
+    )
     public ResponseEntity<StatusUsuarioResponse> status(@Valid @PathVariable Integer user_id) {
     	StatusUsuarioResponse status = statusService.getStatus(user_id);
     	return new ResponseEntity<StatusUsuarioResponse>(status, HttpStatus.OK);

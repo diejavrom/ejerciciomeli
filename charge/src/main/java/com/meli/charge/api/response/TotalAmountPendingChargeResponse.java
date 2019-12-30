@@ -1,11 +1,11 @@
 package com.meli.charge.api.response;
 
-public class TotalPendingChargeResponse {
+public class TotalAmountPendingChargeResponse {
 
 	private Integer userId;
 	private Double totalPendingCharge;
 
-	public TotalPendingChargeResponse(Integer userId, Double totalPendingCharge) {
+	public TotalAmountPendingChargeResponse(Integer userId, Double totalPendingCharge) {
 		super();
 		this.userId = userId;
 		this.totalPendingCharge = totalPendingCharge;

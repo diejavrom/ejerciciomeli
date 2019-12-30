@@ -5,6 +5,9 @@ import java.util.Date;
 import com.meli.status.model.TotalChargeInfoTO;
 import com.meli.status.model.TotalPaymentInfoTO;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema
 public class StatusUsuarioResponse {
 
 	private Integer userId;

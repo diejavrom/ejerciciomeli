@@ -85,6 +85,13 @@
             <artifactId>spring-test</artifactId>
             <scope>test</scope>
         </dependency>
+
+		<!-- SPRING DOC (SWAGGER, OPENAPI) -->
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-ui</artifactId>
+			<version>1.1.48</version>
+		</dependency>
 		
 	</dependencies>
 
