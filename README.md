@@ -76,3 +76,12 @@ A continuación se muestra un diagrama donde se visualizan las interacciones de 
 
 # Solución Cloud (Bonus 2):
 
+Para la solución cloud se utilizó Azure cloud. Cada aplicación se ejecuta dentro de un contenedor Docker como así tambien
+la cola de eventos activemq. Además se dispone de un contenedor nginx que funciona como un reverse proxy redireccionando
+los endpoints en base a las URLs recibidas.
+La configuración de contenedores se realiza mediante el archivo docker-compose.yml
+
+
+
+
+
