@@ -24,6 +24,7 @@ base de datos MongoDB en memoria. Posee un listener que recibe los cargos ingres
 * aplicación status
 
 Permite consultar el estado de deuda del usuario obteniendo la información de las aplicaciones charge y payment. No posee almacenamiento.
+Documentación de la API en https://meli-multi2.azurewebsites.net/status/doc/status-api.html
 
 * aplicación currency
 
