@@ -1,6 +1,6 @@
-# Sistema de Cobranzas Meli
+## Sistema de Cobranzas Meli
 
-Los componentes del sistema son los siguientes:
+# componentes del sistema + documentación de las APIs:
 
 * aplicación charge:
 
@@ -44,4 +44,35 @@ A continuación se muestra un diagrama donde se visualizan las interacciones de 
 
 ![alt text](https://github.com/diejavrom/ejerciciomeli/blob/master/melisystem.png)
 
+# Ejecución en entorno local:
+
+* Requerimientos previos
+1) Tener instalado java 1.8
+2) Tener maven 3.3.3 instalado 
+3) Para ejecutar el sistema en un entorno local primero deberá instalarse una instancia de activeMQ activa en el puerto tcp 61616, con usuario admin y password admin.
+
+* Ejecución luego de haber clonado el repo
+1) Iniciar activeMQ (activemq start)
+
+2) Iniciar aplicación charge. Dentro del path ejerciciomeli/charge ejecutar
+   java -jar target/charge-0.0.1-SNAPSHOT.jar
+   la API quedará expuesta en http://localhost:8180/charge
+   
+3) Iniciar aplicación payment. Dentro del path ejerciciomeli/payment ejecutar
+   java -jar target/payment-0.0.1-SNAPSHOT.jar
+   la API quedará expuesta en http://localhost:8080/payment
+   
+4) Iniciar aplicación bill. Dentro del path ejerciciomeli/bill ejecutar
+   java -jar target/bill-0.0.1-SNAPSHOT.jar
+   la API quedará expuesta en http://localhost:8480/bill
+
+5) Iniciar aplicación currency. Dentro del path ejerciciomeli/currency ejecutar
+   java -jar target/currency-0.0.1-SNAPSHOT.jar
+   la API quedará expuesta en http://localhost:8280/currency
+
+5) Iniciar aplicación status. Dentro del path ejerciciomeli/status ejecutar
+   java -jar target/status-0.0.1-SNAPSHOT.jar
+   la API quedará expuesta en http://localhost:8380/status
+
+# Solución Cloud (Bonus 2):
 
