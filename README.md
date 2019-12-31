@@ -78,11 +78,18 @@ A continuación se muestra un diagrama donde se visualizan las interacciones de 
 <br>java -jar target/status-0.0.1-SNAPSHOT.jar
 <br>la API quedará expuesta en http://localhost:8380/status
 
+# Mejoras a realizar - Consideraciones:
+
++ Seguridad
++ Servicios Health
++ escalamiento + infraestructura ideal (kubernetes + swarm)
++ caché en aplicación currency
++ testing entre microservicios
+
 # Solución Cloud (Bonus 2):
 
-Para la solución cloud se utilizó Azure cloud. Cada aplicación se ejecuta dentro de un contenedor Docker como así tambien
-la cola de eventos activemq. Además se dispone de un contenedor nginx que funciona como un reverse proxy redireccionando
-los endpoints en base a las URLs recibidas.
+Para la solución cloud se utilizó Azure cloud. Cada aplicación se ejecuta dentro de un contenedor Docker con el perfil "cloud", 
+la cola de eventos activemq también corre sobre un contenedor. Además, a diferencia de la solución local, se dispone de un contenedor nginx que funciona como un reverse proxy redireccionando los endpoints hacia los otros contenedores en base a las URLs recibidas.
 El deploy y la relación de contenedores se realiza mediante el archivo docker-compose.yml, de esta manera todos quedan
 ejecutándose dentro de un mismo host.
 Para construir la imagen de cada conteneder se provee un archivo Dockerfile que reside en el path raíz de cada proyecto.
