@@ -12,8 +12,9 @@ Además, posee un listener (implementado en JMS) que recibe los pagos notificado
 * aplicación payment:
 
 Gestión de pagos. Mediante esta aplicación se pueden ingresar y consultar pagos. Cada pago está relacionado con los cargos que fueron
-saldados con dicho pago. Los datos se almacenan en una base de datos MongoDB. Cada vez que se ingresa un pago, el mismo, luego de procesado,
-es notificado a una cola de eventos (charge queue) para luego ser consumido por la aplicación charge.
+saldados con dicho pago. Los datos se almacenan en una base de datos MongoDB. Cada vez que se ingresa un pago, el mismo, luego de procesado, es notificado a una cola de eventos (charge queue) para luego ser consumido por la aplicación charge.
+Al momento de crear un pago se exige una clave de idempotencia (idempkey) en el header. Si esa clave no está presente o bien se envia
+repetida, el pago será rechazado.
 
 * aplicación bill:
 
