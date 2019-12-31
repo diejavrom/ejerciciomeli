@@ -8,24 +8,24 @@ Gestión de cargos. A través de ella se pueden ingresar y consultar cargos. Cad
 que se utilizaron para saldarlo. Almacena los datos en una base de datos MongoDB en memoria. Cada vez que se ingresa un cargo el mismo
 es notificado a una cola de eventos (bill queue) que luego será consumido por la aplicación bill.
 Además, posee un listener (implementado en JMS) que recibe los pagos notificados en la cola de eventos por la aplicación payment.
-Documentación de la API en https://meli-multi2.azurewebsites.net/charge/doc/charge-api.html
+<br>Documentación de la API en https://meli-multi2.azurewebsites.net/charge/doc/charge-api.html
 
 * aplicación payment:
 
 Gestión de pagos. Mediante esta aplicación se pueden ingresar y consultar pagos. Cada pago está relacionado con los cargos que fueron
 saldados con dicho pago. Los datos se almacenan en una base de datos MongoDB. Cada vez que se ingresa un pago, el mismo, luego de procesado, es notificado a una cola de eventos (charge queue) para luego ser consumido por la aplicación charge.
 Al momento de crear un pago se exige una clave de idempotencia (idempkey) en el http header. Si esa clave no está presente o bien se envia repetida, el pago será rechazado. Con esto se garantiza que los pagos no se procesen en forma duplicada.
-Documentación de la API en https://meli-multi2.azurewebsites.net/payment/doc/payment-api.html
+<br>Documentación de la API en https://meli-multi2.azurewebsites.net/payment/doc/payment-api.html
 
 * aplicación bill:
 
 A través de esta aplicación se pueden recuperar las facturas. En cada factura se informan los cargos que la componen. También utiliza una base de datos MongoDB en memoria. Posee un listener que recibe los cargos ingresados desde una cola de eventos.
-Documentación de la API en https://meli-multi2.azurewebsites.net/bill/doc/bill-api.html
+<br>Documentación de la API en https://meli-multi2.azurewebsites.net/bill/doc/bill-api.html
 
 * aplicación status
 
 Permite consultar el estado de deuda del usuario obteniendo la información de las aplicaciones charge y payment. No posee almacenamiento.
-Documentación de la API en https://meli-multi2.azurewebsites.net/status/doc/status-api.html
+<br>Documentación de la API en https://meli-multi2.azurewebsites.net/status/doc/status-api.html
 
 * aplicación currency
 
@@ -33,7 +33,7 @@ Almacena la configuración de los tipos de moneda que se manejan en el sistema. 
 por default también permite convertir cualquier importe (configurado) a la moneda por defecto. A efectos de la prueba, 
 esta aplicación al iniciarse inserta en su base de datos (Mongo DB en memoria) la moneda ARS (peso argentino) como moneda por defecto y 
 también USD (dólar) con una relación 1 USD -> 63 ARS.
-Documentación de la API en https://meli-multi2.azurewebsites.net/currency/doc/currency-api.html
+<br>Documentación de la API en https://meli-multi2.azurewebsites.net/currency/doc/currency-api.html
 
 * cola de eventos "charge.queue":
 
@@ -56,27 +56,27 @@ A continuación se muestra un diagrama donde se visualizan las interacciones de 
 
 * Ejecución luego de haber clonado el repo
 1) Iniciar activeMQ 
-   activemq start
+<br>activemq start
 
 2) Iniciar aplicación charge. Dentro del path ejerciciomeli/charge ejecutar
-   java -jar target/charge-0.0.1-SNAPSHOT.jar
-   la API quedará expuesta en http://localhost:8180/charge
+<br>java -jar target/charge-0.0.1-SNAPSHOT.jar
+<br>la API quedará expuesta en http://localhost:8180/charge
    
 3) Iniciar aplicación payment. Dentro del path ejerciciomeli/payment ejecutar
-   java -jar target/payment-0.0.1-SNAPSHOT.jar
-   la API quedará expuesta en http://localhost:8080/payment
+<br>java -jar target/payment-0.0.1-SNAPSHOT.jar
+<br>la API quedará expuesta en http://localhost:8080/payment
    
 4) Iniciar aplicación bill. Dentro del path ejerciciomeli/bill ejecutar
-   java -jar target/bill-0.0.1-SNAPSHOT.jar
-   la API quedará expuesta en http://localhost:8480/bill
+<br>java -jar target/bill-0.0.1-SNAPSHOT.jar
+<br>la API quedará expuesta en http://localhost:8480/bill
 
 5) Iniciar aplicación currency. Dentro del path ejerciciomeli/currency ejecutar
-   java -jar target/currency-0.0.1-SNAPSHOT.jar
-   la API quedará expuesta en http://localhost:8280/currency
+<br>java -jar target/currency-0.0.1-SNAPSHOT.jar
+<br>la API quedará expuesta en http://localhost:8280/currency
 
 5) Iniciar aplicación status. Dentro del path ejerciciomeli/status ejecutar
-   java -jar target/status-0.0.1-SNAPSHOT.jar
-   la API quedará expuesta en http://localhost:8380/status
+<br>java -jar target/status-0.0.1-SNAPSHOT.jar
+<br>la API quedará expuesta en http://localhost:8380/status
 
 # Solución Cloud (Bonus 2):
 
@@ -89,9 +89,9 @@ Para construir la imagen de cada conteneder se provee un archivo Dockerfile que 
 Se utiliza un repositorio de imágenes provisto por Azure Cloud.
 La URL base de esta solución es https://meli-multi2.azurewebsites.net, por lo que los endpoints quedan de la siguiente manera:
 
-https://meli-multi2.azurewebsites.net/charge
-https://meli-multi2.azurewebsites.net/payment
-https://meli-multi2.azurewebsites.net/bill
-https://meli-multi2.azurewebsites.net/currency
-https://meli-multi2.azurewebsites.net/status
+<br>https://meli-multi2.azurewebsites.net/charge
+<br>https://meli-multi2.azurewebsites.net/payment
+<br>https://meli-multi2.azurewebsites.net/bill
+<br>https://meli-multi2.azurewebsites.net/currency
+<br>https://meli-multi2.azurewebsites.net/status
 
