@@ -8,18 +8,19 @@ Gestión de cargos. A través de ella se pueden ingresar y consultar cargos. Cad
 que se utilizaron para saldarlo. Almacena los datos en una base de datos MongoDB en memoria. Cada vez que se ingresa un cargo el mismo
 es notificado a una cola de eventos (bill queue) que luego será consumido por la aplicación bill.
 Además, posee un listener (implementado en JMS) que recibe los pagos notificados en la cola de eventos por la aplicación payment.
+Documentación de la API en https://meli-multi2.azurewebsites.net/charge/doc/charge-api.html
 
 * aplicación payment:
 
 Gestión de pagos. Mediante esta aplicación se pueden ingresar y consultar pagos. Cada pago está relacionado con los cargos que fueron
 saldados con dicho pago. Los datos se almacenan en una base de datos MongoDB. Cada vez que se ingresa un pago, el mismo, luego de procesado, es notificado a una cola de eventos (charge queue) para luego ser consumido por la aplicación charge.
-Al momento de crear un pago se exige una clave de idempotencia (idempkey) en el header. Si esa clave no está presente o bien se envia
-repetida, el pago será rechazado.
+Al momento de crear un pago se exige una clave de idempotencia (idempkey) en el http header. Si esa clave no está presente o bien se envia repetida, el pago será rechazado. Con esto se garantiza que los pagos no se procesen en forma duplicada.
+Documentación de la API en https://meli-multi2.azurewebsites.net/payment/doc/payment-api.html
 
 * aplicación bill:
 
-A través de esta aplicación se pueden recuperar las facturas. En cada factura se informan los cargos que la componen. También utiliza una
-base de datos MongoDB en memoria. Posee un listener que recibe los cargos ingresados desde una cola de eventos.
+A través de esta aplicación se pueden recuperar las facturas. En cada factura se informan los cargos que la componen. También utiliza una base de datos MongoDB en memoria. Posee un listener que recibe los cargos ingresados desde una cola de eventos.
+Documentación de la API en https://meli-multi2.azurewebsites.net/bill/doc/bill-api.html
 
 * aplicación status
 
@@ -31,15 +32,16 @@ Documentación de la API en https://meli-multi2.azurewebsites.net/status/doc/sta
 Almacena la configuración de los tipos de moneda que se manejan en el sistema. En esta aplicación además de establecer cuál es la moneda 
 por default también permite convertir cualquier importe (configurado) a la moneda por defecto. A efectos de la prueba, 
 esta aplicación al iniciarse inserta en su base de datos (Mongo DB en memoria) la moneda ARS (peso argentino) como moneda por defecto y 
-también USD (dólar) con una relación 1 USD -> 63 ARS. 
+también USD (dólar) con una relación 1 USD -> 63 ARS.
+Documentación de la API en https://meli-multi2.azurewebsites.net/currency/doc/currency-api.html
 
 * cola de eventos "charge.queue":
 
-En esta cola de eventos la aplicación payment informa los pagos procesados que luego serán notificados al listener de la aplicación charge.
+En esta cola de eventos la aplicación payment informa los pagos procesados que luego serán notificados al listener de la aplicación charge. Se implementa con ActiveMQ.
 
 * cola de eventos "bill.queue":
 
-En esta cola de eventos la aplicación charge informa los cargos procesados que luego serán notificados al listener de la aplicación bill.
+En esta cola de eventos la aplicación charge informa los cargos procesados que luego serán notificados al listener de la aplicación bill. Se implementa con ActiveMQ.
 
 A continuación se muestra un diagrama donde se visualizan las interacciones de todos los componentes mencionados anteriormente:
 
@@ -53,7 +55,8 @@ A continuación se muestra un diagrama donde se visualizan las interacciones de 
 3) Para ejecutar el sistema en un entorno local primero deberá instalarse una instancia de activeMQ activa en el puerto tcp 61616, con usuario admin y password admin.
 
 * Ejecución luego de haber clonado el repo
-1) Iniciar activeMQ (activemq start)
+1) Iniciar activeMQ 
+   activemq start
 
 2) Iniciar aplicación charge. Dentro del path ejerciciomeli/charge ejecutar
    java -jar target/charge-0.0.1-SNAPSHOT.jar
@@ -80,9 +83,15 @@ A continuación se muestra un diagrama donde se visualizan las interacciones de 
 Para la solución cloud se utilizó Azure cloud. Cada aplicación se ejecuta dentro de un contenedor Docker como así tambien
 la cola de eventos activemq. Además se dispone de un contenedor nginx que funciona como un reverse proxy redireccionando
 los endpoints en base a las URLs recibidas.
-La configuración de contenedores se realiza mediante el archivo docker-compose.yml
+El deploy y la relación de contenedores se realiza mediante el archivo docker-compose.yml, de esta manera todos quedan
+ejecutándose dentro de un mismo host.
+Para construir la imagen de cada conteneder se provee un archivo Dockerfile que reside en el path raíz de cada proyecto.
+Se utiliza un repositorio de imágenes provisto por Azure Cloud.
+La URL base de esta solución es https://meli-multi2.azurewebsites.net, por lo que los endpoints quedan de la siguiente manera:
 
-
-
-
+https://meli-multi2.azurewebsites.net/charge
+https://meli-multi2.azurewebsites.net/payment
+https://meli-multi2.azurewebsites.net/bill
+https://meli-multi2.azurewebsites.net/currency
+https://meli-multi2.azurewebsites.net/status
 
