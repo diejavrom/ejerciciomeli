@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.meli</groupId>
 	<artifactId>payment</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.2-SNAPSHOT</version>
 	<name>payment</name>
 	<description>Meli Payment App</description>
 
