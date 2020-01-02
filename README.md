@@ -80,7 +80,7 @@ A continuación se muestra un diagrama donde se visualizan las interacciones de 
 
 # Solución con saldo a favor (Bonus 1):
 
-Ver branch v2.
+Ver branch [v2](https://github.com/diejavrom/ejerciciomeli/tree/v2).
 
 # Solución Cloud (Bonus 2):
 
