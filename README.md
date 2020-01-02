@@ -4,17 +4,17 @@
 
 * aplicación charge:
 
-Gestión de cargos. A través de ella se pueden ingresar y consultar cargos. Cada cargo está relacionado con los pagos
+Gestión de cargos. A través de esta aplicación se pueden ingresar y consultar cargos. Cada cargo estará relacionado con los pagos
 que se utilizaron para saldarlo. Almacena los datos en una base de datos MongoDB en memoria. Cada vez que se ingresa un cargo el mismo
-es notificado a una cola de eventos (bill queue) que luego será consumido por la aplicación bill.
+es notificado a una cola de eventos (bill.queue) que luego será consumido por la aplicación bill.
 Además, posee un listener (implementado en JMS) que recibe los pagos notificados en la cola de eventos por la aplicación payment.
 <br>Documentación de la API en https://meli-multi2.azurewebsites.net/charge/doc/charge-api.html
 
 * aplicación payment:
 
 Gestión de pagos. Mediante esta aplicación se pueden ingresar y consultar pagos. Cada pago está relacionado con los cargos que fueron
-saldados con dicho pago. Los datos se almacenan en una base de datos MongoDB. Cada vez que se ingresa un pago, el mismo, luego de procesado, es notificado a una cola de eventos (charge queue) para luego ser consumido por la aplicación charge.
-Al momento de crear un pago se exige una clave de idempotencia (idempkey) en el http header. Si esa clave no está presente o bien se envia repetida, el pago será rechazado. Con esto se garantiza que los pagos no se procesen en forma duplicada.
+saldados con dicho pago. Los datos se almacenan en una base de datos MongoDB. Cada vez que se ingresa un pago, el mismo, luego de procesado, es notificado a una cola de eventos (charge.queue) para luego ser consumido por la aplicación charge.
+Al momento de crear un pago se exige una clave de idempotencia (idempkey) en el http header. Si esa clave no está presente o bien se envia repetida, el pago será rechazado. Con esto se garantiza la unicidad de los pagos.
 <br>Documentación de la API en https://meli-multi2.azurewebsites.net/payment/doc/payment-api.html
 
 * aplicación bill:
@@ -78,23 +78,15 @@ A continuación se muestra un diagrama donde se visualizan las interacciones de 
 <br>java -jar target/status-0.0.1-SNAPSHOT.jar
 <br>la API quedará expuesta en http://localhost:8380/status
 
-# Mejoras a realizar - Consideraciones:
-
-+ Seguridad
-+ Servicios Health
-+ escalamiento + infraestructura ideal (kubernetes + swarm)
-+ caché en aplicación currency
-+ testing entre microservicios
-
 # Solución Cloud (Bonus 2):
 
 Para la solución cloud se utilizó Azure cloud. Cada aplicación se ejecuta dentro de un contenedor Docker con el perfil "cloud", 
 la cola de eventos activemq también corre sobre un contenedor. Además, a diferencia de la solución local, se dispone de un contenedor nginx que funciona como un reverse proxy redireccionando los endpoints hacia los otros contenedores en base a las URLs recibidas.
-El deploy y la relación de contenedores se realiza mediante el archivo docker-compose.yml, de esta manera todos quedan
+<br>El deploy y la relación de contenedores se realiza mediante el archivo docker-compose.yml, de esta manera todos quedan
 ejecutándose dentro de un mismo host.
-Para construir la imagen de cada conteneder se provee un archivo Dockerfile que reside en el path raíz de cada proyecto.
+<br>Para construir la imagen de cada conteneder se provee un archivo Dockerfile que reside en el path raíz de cada proyecto.
 Se utiliza un repositorio de imágenes provisto por Azure Cloud.
-La URL base de esta solución es https://meli-multi2.azurewebsites.net, por lo que los endpoints quedan de la siguiente manera:
+<br>La URL base de esta solución es https://meli-multi2.azurewebsites.net, por lo que los endpoints quedan de la siguiente manera:
 
 <br>https://meli-multi2.azurewebsites.net/charge
 <br>https://meli-multi2.azurewebsites.net/payment
@@ -102,3 +94,13 @@ La URL base de esta solución es https://meli-multi2.azurewebsites.net, por lo q
 <br>https://meli-multi2.azurewebsites.net/currency
 <br>https://meli-multi2.azurewebsites.net/status
 
+# Mejoras a realizar - Consideraciones:
+
+* Mongo DB "in memory": en todas las soluciones se optó por la opción "in memory" MongoDB, en una implementación real cada base de datos
+debería ejecutarse en un host diferente al de cada aplicación y además tendría que estar configurada en modo "cluster" de tal manera de escalar cuando fuese necesario.
+* escalamiento + infraestructura ideal (kubernetes + swarm): cada aplicación está pensada en operar de forma independiente, stateless y desacoplada (microservicio), de esta manera, en una implementación real, idealmente, cada una de ellas podría ejecutarse dentro de un cluster kubernetes o swarm para garantizar el escalamiento horizontal en caso de necesidad.     
+* Servicios Health: si cada aplicación se ejecutase dentro de un cluster de contenedores se tendría que definir un servicio del tipo "check health" para facilitar la creación/destrucción de pods por parte del orquestador. 
+* Seguridad: en una implementación real debería existir una capa de seguridad (oAuth, custom, etc.) en cada microservicio
+* Caché en aplicación currency: la aplicación currency se puede entender como una aplicación que maneja datos de configuración lo que la hace ideal para aplicar una política de "caching" distribuida para mejorar la performance. Esto se podría implementar con Redis o Memcaché por ejemplo.
+* Testing entre microservicios: en las soluciones se proveen testing unitario dentro de cada aplicación pero se podría mejorar realizando un test de integración entre aplicaciones (end to end testing).
+* Aplicación para lockeo de recursos: en ciertas situaciones de mucha concurrencia se puede dar que mas de una instancia acceda al mismo tiempo a una entidad y que una sobreescriba los cambios producidos por la otra dando lugar a inconsistencias. Si en este sistema se diera ese caso, se podría subsanar implementando otra aplicación (aplicación lock) que se encargue de gestionar los permisos de acceso a cada entidad, de esta manera, una instancia solo podrá escribir sobre cierta entidad X sí y sólo sí tiene el lock de X provisto por la aplicación lock, al terminar la escritura, la aplicación, deberá informar a la aplicación lock que ha finalizado para que otra instancia pueda escribir sobre X si así lo requiera. 
