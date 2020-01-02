@@ -26,7 +26,7 @@ public class StatusRestController {
 	@Autowired
 	private StatusService statusService;
 
-    @RequestMapping(value = "/{user_id}", method = RequestMethod.POST)
+    @RequestMapping(value = "/{user_id}", method = RequestMethod.GET)
     @Operation(
     		summary = "Devuelve el estado de deuda del usuario.",
     		responses = {
