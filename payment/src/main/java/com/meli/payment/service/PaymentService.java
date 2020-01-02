@@ -1,5 +1,6 @@
 package com.meli.payment.service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -13,10 +14,11 @@ import com.meli.payment.api.reponse.TotalPaymentResponse;
 import com.meli.payment.api.request.PaymentEvent;
 import com.meli.payment.exception.ParamMandatoryException;
 import com.meli.payment.exception.PaymentAlreadyProcessedException;
-import com.meli.payment.exception.PaymentExceedsTotalDebtException;
 import com.meli.payment.model.Charge;
 import com.meli.payment.model.Payment;
+import com.meli.payment.model.to.ChargeQueueTO;
 import com.meli.payment.model.to.ChargeTO;
+import com.meli.payment.model.to.PaymentTO;
 import com.meli.payment.repository.PaymentRepository;
 
 /**
@@ -58,11 +60,7 @@ public class PaymentService {
 
 		//se obtiene los cargos con deuda
 		List<ChargeTO> pendingCharges = chargeService.getPendingCharges(paymentEvt.getUser_id());
-		Double totalDebt = pendingCharges.stream().map(c -> c.getAmountPending()).reduce(0d, (v1,v2) -> v1+v2 ).doubleValue();
 		
-		//monto del pago <= deuda total
-		checkDebtTotal(totalDebt, amountInCurrencyDefault);
-	
 		//se agregan los cargos pagados a la lista de cargos del pago
 		Payment payment = new Payment(paymentEvt, amountInCurrencyDefault, idempKey);
 		Double pagoAmount = payment.getAmount();
@@ -70,7 +68,7 @@ public class PaymentService {
 			if(pagoAmount > 0) {
 				Double amountToUSe = Math.min(pagoAmount, chargeTO.getAmountPending());
 				pagoAmount = pagoAmount - amountToUSe;
-				payment.getCharges().add(new Charge(chargeTO, amountToUSe));
+				payment.payCharge(new Charge(chargeTO, amountToUSe), amountToUSe);
 			}
 		}
 
@@ -81,17 +79,6 @@ public class PaymentService {
 		queueChargeService.enqueuePayment(paymentInserted);
 
 		return paymentInserted;
-	}
-
-	/**
-	 * verifica que el monto del pago <= deuda total
-	 * @param totalDebt
-	 * @param amountInCurrencyDefault
-	 */
-	private void checkDebtTotal(Double totalDebt, Double amountInCurrencyDefault) {
-		if(amountInCurrencyDefault > totalDebt) {
-			throw new PaymentExceedsTotalDebtException(String.format("El pago con monto '%1$,.2f' excede la deuda del usuario '%2$,.2f'", amountInCurrencyDefault, totalDebt));
-		}
 	}
 
 	/**
@@ -131,7 +118,6 @@ public class PaymentService {
 	 * @param user_id
 	 * @return  el resumen de los pagos
 	 */
-	
 	public TotalPaymentResponse totalPaymentInfo(Integer user_id) {
 		
 		LOGGER.info("obteniendo resumen de pagos del usuario {}", user_id);
@@ -144,6 +130,41 @@ public class PaymentService {
 			lastPayment = allPayments.stream().map(c -> c.getDateObj()).reduce(DateHelper.getInstance().getMinTimestamp(), (ap1 , ap2) -> DateHelper.getInstance().max(ap1, ap2));
 		}
 		return new TotalPaymentResponse(user_id, totalPayment, lastPayment, allPayments.size());
+	}
+
+	/**
+	 * Obtiene la lista de pagos con saldo disponible
+	 * @param user_id
+	 * @return la lista de pagos con saldo disponible
+	 */
+	public List<Payment> listPaymentsWithAmountAvailableUserId(Integer user_id) {
+		
+		LOGGER.info("obteniendo lista de pagos con saldo disponible del usuario {}", user_id);
+
+		return paymentRepo.findPaymentsWithAmountAvailableByUserId(user_id);
+	}
+
+	/**
+	 * Actualiza los pagos afectados por el cargo
+	 * @param chargeTO
+	 * @return la lista de pagos afectados
+	 */
+	public List<Payment> updatePayments(ChargeQueueTO chargeTO) {
+
+		List<Payment> paymentPersisted = new ArrayList<Payment>();
+
+		for(PaymentTO paymentTO : chargeTO.getPayments()) {
+
+			Payment payment = paymentRepo.findById(paymentTO.getId()).get();
+
+			Charge charge = new Charge(chargeTO, paymentTO.getAmountUsed());
+
+			payment.payCharge(charge, paymentTO.getAmountUsed());
+
+			paymentPersisted.add(paymentRepo.save(payment));
+		}
+
+		return paymentPersisted;
 	}
 
 }

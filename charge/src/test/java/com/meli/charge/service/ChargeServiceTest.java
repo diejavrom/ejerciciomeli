@@ -27,10 +27,9 @@ import org.springframework.test.context.ContextConfiguration;
 
 import com.meli.charge.DateHelper;
 import com.meli.charge.api.request.ChargeEvent;
-import com.meli.charge.api.response.TotalChargeInfoResponse;
 import com.meli.charge.api.response.TotalAmountPendingChargeResponse;
+import com.meli.charge.api.response.TotalChargeInfoResponse;
 import com.meli.charge.exception.ChargeOutOfDateException;
-import com.meli.charge.exception.PaymentExceedsTotalDebtException;
 import com.meli.charge.model.Charge;
 import com.meli.charge.model.Payment;
 import com.meli.charge.model.enums.EChargeType;
@@ -53,7 +52,13 @@ public class ChargeServiceTest {
 	private QueueBillService queueBillService;
 	
 	@Mock
+	private QueuePaymentService queuePaymentService;
+
+	@Mock
 	private CurrencyService currencyService;
+
+	@Mock
+	private PaymentService paymentService;
 
 	@Before
     public void setup() {
@@ -61,7 +66,7 @@ public class ChargeServiceTest {
     }
 
 	@Test
-	public void testCreateChargeFromEventOk() {
+	public void testCreateChargeFromEventOkWithoutAvailablePayments() {
 		Double amount = 100d;
 		String currency = "ARS";
 		Integer event_id = 1234;
@@ -72,7 +77,7 @@ public class ChargeServiceTest {
 		ChargeEvent chargeEvt = new BuilderEvtCharge()
 			.withAmount(amount)
 		    .withCurrency(currency)
-		    .withDate("2019-12-16T03:00:00.000+0000")
+		    .withDate(getNowStr())
 		    .withEvent_id(event_id)
 		    .withUserId(userId)
 		    .withEvent_type(eventType)
@@ -88,6 +93,8 @@ public class ChargeServiceTest {
 
 		doNothing().when(queueBillService).enqueueCharge(ArgumentMatchers.any(Charge.class), ArgumentMatchers.any(Payment.class), ArgumentMatchers.any(Double.class));
 
+		when(paymentService.getPaymentsWithAvailableAmount(userId)).thenReturn(Collections.emptyList());
+
 		Charge createdCharge = chargeService.createCharge(chargeEvt);
 
 		Assert.assertEquals(amount, createdCharge.getAmount());
@@ -98,6 +105,66 @@ public class ChargeServiceTest {
 		Assert.assertEquals(event_id, createdCharge.getEventId());
 		Assert.assertEquals(userId, createdCharge.getUserId());
 			
+	}
+
+	@Test
+	public void testCreateChargeFromEventOkWithAvailablePayments() {
+		Double amount = 100d;
+		Double amountPayment = 130d;
+		String currency = "ARS";
+		Integer event_id = 1234;
+		Integer userId = 12223;
+		String eventType = EChargeType.PUBLICIDAD.getName();
+		String category = EChargeType.PUBLICIDAD.getCategory().name();
+		String idPayment = "lkasklaslk";
+		
+		PaymentTO paymentTO = new PaymentTO();
+		paymentTO.setId(idPayment);
+		paymentTO.setAmount(amountPayment);
+		paymentTO.setAvailableAmount(amountPayment);
+		paymentTO.setUserId(userId);
+
+		ChargeEvent chargeEvt = new BuilderEvtCharge()
+			.withAmount(amount)
+		    .withCurrency(currency)
+		    .withDate(getNowStr())
+		    .withEvent_id(event_id)
+		    .withUserId(userId)
+		    .withEvent_type(eventType)
+		    .build();
+
+		when(chargeRepo.insert(ArgumentMatchers.any(Charge.class))).thenAnswer(new Answer<Charge>() {
+		    public Charge answer(InvocationOnMock invocation) {
+		        return (Charge)invocation.getArguments()[0];
+		    }
+		});
+
+		when(currencyService.convertToCurrencyDefault(currency, amount)).thenReturn(amount);
+
+		doNothing().when(queueBillService).enqueueCharge(ArgumentMatchers.any(Charge.class), ArgumentMatchers.any(Payment.class), ArgumentMatchers.any(Double.class));
+
+		doNothing().when(queuePaymentService).enqueueCharge(ArgumentMatchers.any(Charge.class));
+
+		when(paymentService.getPaymentsWithAvailableAmount(userId)).thenReturn(Collections.singletonList(paymentTO));
+
+		Charge createdCharge = chargeService.createCharge(chargeEvt);
+
+		Assert.assertEquals(amount, createdCharge.getAmount());
+		Assert.assertEquals(new Double(0d), createdCharge.getAmountPending());
+		Assert.assertEquals(currency, createdCharge.getCurrency());
+		Assert.assertEquals(category, createdCharge.getCategory());
+		Assert.assertEquals(eventType, createdCharge.getEvent_type());
+		Assert.assertEquals(event_id, createdCharge.getEventId());
+		Assert.assertEquals(userId, createdCharge.getUserId());
+
+		Payment payment = createdCharge.getPayments().iterator().next();
+		Assert.assertEquals(payment.getId(), paymentTO.getId());
+		Assert.assertEquals(payment.getAmount(), createdCharge.getAmount());
+		
+	}
+
+	private String getNowStr() {
+		return DateHelper.getInstance().dateToString(DateHelper.getInstance().getNow());
 	}
 
 	@Test(expected = ChargeOutOfDateException.class)
@@ -118,36 +185,55 @@ public class ChargeServiceTest {
 			    .withUserId(userId)
 			    .withEvent_type(eventType)
 			    .build();
-		
+
 		chargeService.createCharge(chargeEvt);
 	}
 
-	@Test(expected = PaymentExceedsTotalDebtException.class)
+	@Test
 	public void testReceivePaymentExceedsDebt() {
 		Integer userId = 289;
 		String currency = "ARS";
-		double amount = 100d;
+		Double amount = 100d;
 		Integer event_id = 1234;
 		String eventType = EChargeType.PUBLICIDAD.getName();
 
 		PaymentTO payment = new PaymentTO();
+		payment.setId("ksaklasklaslk");
 		payment.setAmount(amount);
 		payment.setUserId(userId);
-	
+
+		String idCharge = "jkl";
+		ChargeTO chargeTO = new ChargeTO();
+		chargeTO.setAmountUsed(amount/2);
+		chargeTO.setId(idCharge);
+		payment.getCharges().add(chargeTO);
+
 		ChargeEvent chargeEvt = new BuilderEvtCharge()
-				.withAmount(amount - 10)
+				.withAmount(amount/2)
 			    .withCurrency(currency)
-			    .withDate("2019-12-16T03:00:00.000+0000")
+			    .withDate(getNowStr())
 			    .withEvent_id(event_id)
 			    .withUserId(userId)
 			    .withEvent_type(eventType)
 			    .build();
-		
+
 		Charge charge = new Charge(chargeEvt, chargeEvt.getAmount());
+		charge.setId(idCharge);
 
+		when(chargeRepo.findById(idCharge)).thenReturn(Optional.of(charge));
 		when(chargeRepo.findAllWithDebt(userId, Sort.by(Direction.ASC, "dateObj"))).thenReturn(Collections.singletonList(charge));
+		when(chargeRepo.save(ArgumentMatchers.any(Charge.class))).thenAnswer(new Answer<Charge>() {
+		    public Charge answer(InvocationOnMock invocation) {
+		        return (Charge)invocation.getArguments()[0];
+		    }
+		});
+		doNothing().when(queueBillService).enqueueCharge(ArgumentMatchers.any(Charge.class), ArgumentMatchers.any(Payment.class), ArgumentMatchers.any(Double.class));
 
-		chargeService.payChargesWithPayment(payment);
+		List<Charge> result = chargeService.payChargesWithPayment(payment);
+		Charge chargeResult = result.iterator().next();
+
+		Assert.assertEquals(chargeResult.getAmountPending(), new Double(0d));
+		
 	}
 
 	@Test
@@ -172,7 +258,7 @@ public class ChargeServiceTest {
 		ChargeEvent chargeEvt = new BuilderEvtCharge()
 				.withAmount(2*amount)
 			    .withCurrency(currency)
-			    .withDate("2019-12-16T03:00:00.000+0000")
+			    .withDate(getNowStr())
 			    .withEvent_id(event_id)
 			    .withUserId(userId)
 			    .withEvent_type(eventType)
@@ -207,7 +293,7 @@ public class ChargeServiceTest {
 		ChargeEvent chargeEvt = new BuilderEvtCharge()
 				.withAmount(2*amount)
 			    .withCurrency(currency)
-			    .withDate("2019-12-16T03:00:00.000+0000")
+			    .withDate(getNowStr())
 			    .withEvent_id(event_id)
 			    .withUserId(userId)
 			    .withEvent_type(eventType)
@@ -221,7 +307,7 @@ public class ChargeServiceTest {
 		chargeEvt = new BuilderEvtCharge()
 				.withAmount(2*amount)
 			    .withCurrency(currency)
-			    .withDate("2019-12-18T03:00:00.000+0000")
+			    .withDate(getNowStr())
 			    .withEvent_id(event_id)
 			    .withUserId(userId)
 			    .withEvent_type(eventType)
@@ -253,7 +339,7 @@ public class ChargeServiceTest {
 		ChargeEvent chargeEvt = new BuilderEvtCharge()
 				.withAmount(2*amount)
 			    .withCurrency(currency)
-			    .withDate("2019-12-16T03:00:00.000+0000")
+			    .withDate(getNowStr())
 			    .withEvent_id(event_id)
 			    .withUserId(userId)
 			    .withEvent_type(eventType)
@@ -266,7 +352,7 @@ public class ChargeServiceTest {
 		chargeEvt = new BuilderEvtCharge()
 				.withAmount(2*amount)
 			    .withCurrency(currency)
-			    .withDate("2019-12-18T03:00:00.000+0000")
+			    .withDate(getNowStr())
 			    .withEvent_id(event_id)
 			    .withUserId(userId)
 			    .withEvent_type(eventType)

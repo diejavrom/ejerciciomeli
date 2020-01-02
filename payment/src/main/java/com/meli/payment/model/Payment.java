@@ -22,6 +22,7 @@ public class Payment implements Serializable {
 	@Indexed(name="idempkey_unique", unique = true)
 	private String idempKey;
 	private Double amount;
+	private Double availableAmount;
 	private Double originalAmount;
 	private Date dateObj;
 	private Integer userId;
@@ -34,6 +35,7 @@ public class Payment implements Serializable {
 	public Payment(PaymentEvent paymentEvt, Double amountInCurrencyDefault, String idempKey) {
 		this();
 		setAmount(amountInCurrencyDefault);
+		setAvailableAmount(amountInCurrencyDefault);
 		setOriginalAmount(paymentEvt.getAmount());
 		setCurrency(paymentEvt.getCurrency());
 		setUserId(paymentEvt.getUser_id());
@@ -106,5 +108,22 @@ public class Payment implements Serializable {
 		this.charges = charges;
 	}
 
-	
+	public Double getAvailableAmount() {
+		return availableAmount;
+	}
+
+	public void setAvailableAmount(Double availableAmount) {
+		this.availableAmount = availableAmount;
+	}
+
+	/**
+	 * agrega un cargo a la lista y descuenta el saldo usado del monto disponible.
+	 * @param charge
+	 * @param amountToUSe
+	 */
+	public void payCharge(Charge charge, Double amountToUSe) {
+		getCharges().add(charge);
+		setAvailableAmount(getAvailableAmount() - amountToUSe);
+	}
+
 }

@@ -8,6 +8,9 @@ import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+/**
+ * Representa una factura
+ */
 @Document(collection = "bills")
 @CompoundIndexes({
     @CompoundIndex(name = "bill_unique", unique=true, def = "{'userId' : 1, 'month': 1, 'year' : 1}")

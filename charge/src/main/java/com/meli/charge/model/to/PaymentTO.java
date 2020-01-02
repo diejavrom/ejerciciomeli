@@ -15,6 +15,7 @@ public class PaymentTO implements Serializable {
 
 	private String id;
 	private Double amount;
+	private Double availableAmount;
 	private Integer userId;
 	private List<ChargeTO> charges;
 	
@@ -52,6 +53,14 @@ public class PaymentTO implements Serializable {
 
 	public void setCharges(List<ChargeTO> charges) {
 		this.charges = charges;
+	}
+
+	public Double getAvailableAmount() {
+		return availableAmount;
+	}
+
+	public void setAvailableAmount(Double availableAmount) {
+		this.availableAmount = availableAmount;
 	}
 
 }

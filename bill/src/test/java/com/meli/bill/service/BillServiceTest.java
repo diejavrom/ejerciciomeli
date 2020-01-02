@@ -2,6 +2,7 @@ package com.meli.bill.service;
 
 import static org.mockito.Mockito.when;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -100,8 +101,9 @@ public class BillServiceTest {
 	@Test(expected = ChargeAndPayAlreadyProccessedException.class)
 	public void testAddExistingCharge() {
 		Integer userId = 1234;
-		Integer m = 12;
-		Integer y = 2019;
+		Timestamp dateObj = DateHelper.getInstance().getNow();
+		Integer m = DateHelper.getInstance().getMonth(dateObj);
+		Integer y = DateHelper.getInstance().getYear(dateObj);
 		Double amountCharge = 100d;
 		Bill billReturn = new Bill();
 		billReturn.setMonth(m);
@@ -109,7 +111,7 @@ public class BillServiceTest {
 		billReturn.setUserId(userId);
 
 		ChargeTO chargeTO = new ChargeTO();
-		chargeTO.setDateObj(DateHelper.getInstance().stringToTimestamp("2019-12-16T00:00:00"));
+		chargeTO.setDateObj(dateObj);
 		chargeTO.setEvent_id(1234);
 		chargeTO.setAmount(amountCharge);
 		chargeTO.setUserId(userId);

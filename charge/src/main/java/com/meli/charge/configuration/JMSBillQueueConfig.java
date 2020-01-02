@@ -9,7 +9,7 @@ import org.springframework.jms.annotation.EnableJms;
 
 @EnableJms
 @Configuration
-public class JMSConfig {
+public class JMSBillQueueConfig {
 
 	@Bean
 	public Queue queue() {

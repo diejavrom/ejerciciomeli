@@ -3,6 +3,9 @@ package com.meli.bill.model;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+/**
+ * Representa un pago dentro de un cargo
+ */
 @Document(collection = "infopayment")
 public class InfoPayment {
 

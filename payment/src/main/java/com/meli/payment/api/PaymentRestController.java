@@ -42,7 +42,7 @@ public class PaymentRestController {
     					mediaType = "application/json"
     				)
     			 ),
-    			@ApiResponse(responseCode = "400", description = "ante un parámetro inválido, o bien si el pago ya ha sido procesado o si el mismo excede la deuda del usuario"),
+    			@ApiResponse(responseCode = "400", description = "ante un parámetro inválido, o bien si el pago ya ha sido procesado"),
     			@ApiResponse(responseCode = "500", description = "ante un error inesperado")
     		}
     )
@@ -67,6 +67,25 @@ public class PaymentRestController {
     )
     public ResponseEntity<List<Payment>> list(@Valid @PathVariable Integer user_id) {
     	List<Payment> payments = paymentService.listByUserId(user_id);
+    	return new ResponseEntity<List<Payment>>(payments, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/listavailable/{user_id}", method = RequestMethod.GET)
+    @Operation(
+    		summary = "lista los pagos del usuario que tienen saldo sin utilizar en cargos",
+    		responses = {
+    			@ApiResponse(description = "la lista de cargos", responseCode = "200",
+    				content = @Content (
+    					schema = @Schema(implementation = Payment.class),
+    					mediaType = "application/json"
+    				)
+    			 ),
+    			@ApiResponse(responseCode = "400", description = "ante un parámetro inválido"),
+    			@ApiResponse(responseCode = "500", description = "ante un error inesperado")
+    		}
+    )
+    public ResponseEntity<List<Payment>> listPaymentsWithAmountAvailable(@Valid @PathVariable Integer user_id) {
+    	List<Payment> payments = paymentService.listPaymentsWithAmountAvailableUserId(user_id);
     	return new ResponseEntity<List<Payment>>(payments, HttpStatus.OK);
     }
 

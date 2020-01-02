@@ -1,5 +1,6 @@
 package com.meli.payment.model;
 
+import com.meli.payment.model.to.ChargeQueueTO;
 import com.meli.payment.model.to.ChargeTO;
 
 /**
@@ -23,7 +24,15 @@ public class Charge {
 		setEvent_type(chargeTO.getEvent_type());
 		setCategory(chargeTO.getCategory());
 	}
-	
+
+	public Charge(ChargeQueueTO chargeQueueTO, Double amountUsed) {
+		setId(chargeQueueTO.getId());
+		setAmount(chargeQueueTO.getAmount());
+		setAmountUsed(amountUsed);
+		setEvent_type(chargeQueueTO.getEvent_type());
+		setCategory(chargeQueueTO.getCategory());
+	}
+
 	public String getId() {
 		return id;
 	}

@@ -22,7 +22,6 @@ import org.springframework.test.context.ContextConfiguration;
 
 import com.meli.payment.api.reponse.TotalPaymentResponse;
 import com.meli.payment.api.request.PaymentEvent;
-import com.meli.payment.exception.PaymentExceedsTotalDebtException;
 import com.meli.payment.model.Payment;
 import com.meli.payment.model.to.ChargeTO;
 import com.meli.payment.repository.PaymentRepository;
@@ -47,20 +46,43 @@ public class PaymentServiceTest {
 	@Mock
 	private PaymentRepository paymentRepo;
 
-	@Test(expected=PaymentExceedsTotalDebtException.class)
-	public void testCreatePaymentExceedsTotalDebtException() {
+	@Test
+	public void testCreatePaymentExceedsTotalDebt() {
 		Integer userId = 1234;
-		Double totalDebt = 200d;
 		String currency = "ARS";
+		Double amountCharge = 100d;
 
-		when(chargeService.getPendingCharges(userId)).thenReturn(Collections.emptyList());
-		when(paymentRepo.findByIdempKey(ArgumentMatchers.any(String.class))).thenReturn(Collections.emptyList());
-		double paymentAmount = totalDebt*2;
-		when(currencyService.convertToCurrencyDefault(currency, paymentAmount)).thenReturn(paymentAmount);
-
-		PaymentEvent paymentEvt = new PaymentEvent(paymentAmount, currency, userId);
+		List<ChargeTO> chargeTOList = new ArrayList<ChargeTO>();
+		ChargeTO chargeTO = new ChargeTO();
+		chargeTO.setAmount(amountCharge);
+		chargeTO.setAmountPending(amountCharge);
+		chargeTO.setId("id1");
+		chargeTOList.add(chargeTO);
 		
-		paymentService.createPayment(paymentEvt, "alalklakslk");
+		chargeTO = new ChargeTO();
+		chargeTO.setAmount(amountCharge);
+		chargeTO.setAmountPending(amountCharge);
+		chargeTO.setId("id2");
+		chargeTOList.add(chargeTO);
+
+		Double amountPayment = 250d;
+
+		when(chargeService.getPendingCharges(userId)).thenReturn(chargeTOList);
+		when(paymentRepo.findByIdempKey(ArgumentMatchers.any(String.class))).thenReturn(Collections.emptyList());
+		when(currencyService.convertToCurrencyDefault(currency, amountPayment)).thenReturn(amountPayment);
+		doNothing().when(queueChargeService).enqueuePayment(ArgumentMatchers.any(Payment.class));
+
+		when(paymentRepo.insert(ArgumentMatchers.any(Payment.class))).thenAnswer(new Answer<Payment>() {
+		    public Payment answer(InvocationOnMock invocation) {
+		        return (Payment)invocation.getArguments()[0];
+		    }
+		});
+	
+		PaymentEvent paymentEvt = new PaymentEvent(amountPayment, currency, userId);
+
+		Payment paymentCreated = paymentService.createPayment(paymentEvt, "alalklakslk");
+		Double totalMountUsed = paymentCreated.getCharges().stream().map(ch -> ch.getAmountUsed()).reduce(0d, (a1,a2) -> a1+a2);
+		Assert.assertEquals(paymentCreated.getAvailableAmount(), (Double)(amountPayment - totalMountUsed));
 	}
 
 	@Test
@@ -99,6 +121,7 @@ public class PaymentServiceTest {
 		Payment paymentCreated = paymentService.createPayment(paymentEvt, "alalklakslk");
 		Double totalMountUsed = paymentCreated.getCharges().stream().map(ch -> ch.getAmountUsed()).reduce(0d, (a1,a2) -> a1+a2);
 		Assert.assertEquals(totalDebt, totalMountUsed);
+		Assert.assertEquals(paymentCreated.getAvailableAmount(), new Double(0));
 		Assert.assertEquals(chargeTOList.size(), paymentCreated.getCharges().size());
 	}
 
@@ -107,7 +130,6 @@ public class PaymentServiceTest {
 		Integer userId = 1234;
 		String currency = "ARS";
 		double amountCharge = 100d;
-		
 
 		List<ChargeTO> chargeTOList = new ArrayList<ChargeTO>();
 		ChargeTO chargeTO = new ChargeTO();

@@ -22,13 +22,6 @@ public class PaymentResponseEntityExceptionHandler {
 	}
 
 	@RequestMapping
-	@ExceptionHandler({PaymentExceedsTotalDebtException.class})
-	public ResponseEntity<ErrorResponse> handleParamPaymentExceedsTotalDebtsException(PaymentExceedsTotalDebtException ex) {
-		HttpStatus badRequest = HttpStatus.BAD_REQUEST;
-		return new ResponseEntity<ErrorResponse>(new ErrorResponse(badRequest.value(), ex.getMessage()), badRequest);
-	}
-
-	@RequestMapping
 	@ExceptionHandler({ParamMandatoryException.class})
 	public ResponseEntity<ErrorResponse> handleParamMandatoryException(ParamMandatoryException ex) {
 		HttpStatus badRequest = HttpStatus.BAD_REQUEST;

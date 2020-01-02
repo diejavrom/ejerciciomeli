@@ -165,7 +165,7 @@ public class Charge {
 	 */
 	public void payAndRelate(Payment pago, Double amount) {
 		if(getAmountPending() < amount) {
-			throw new IllegalArgumentException(String.format("El monto del cargo % por saldar es menor al monto recibido por descontar %", getAmountPending(), pago.getAmount()));
+			throw new IllegalArgumentException(String.format("El monto del cargo %s por saldar es menor al monto recibido por descontar %s", getAmountPending(), pago.getAmount()));
 		}
 		setAmountPending(getAmountPending() - amount);
 		getPayments().add(pago);

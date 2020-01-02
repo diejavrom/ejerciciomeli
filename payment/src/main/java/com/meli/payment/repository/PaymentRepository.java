@@ -3,6 +3,7 @@ package com.meli.payment.repository;
 import java.util.List;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.meli.payment.model.Payment;
@@ -13,5 +14,8 @@ public interface PaymentRepository extends MongoRepository<Payment, String> {
 	public List<Payment> findByUserId(Integer userId);
 
 	public List<Payment> findByIdempKey(String idempKey);
+
+	@Query("{ $and: [ {availableAmount : { $gt: 0 } }, {userId : ?0}] }")
+	public List<Payment> findPaymentsWithAmountAvailableByUserId(Integer userId);
 
 }

@@ -14,12 +14,11 @@ import org.springframework.stereotype.Service;
 
 import com.meli.charge.DateHelper;
 import com.meli.charge.api.request.ChargeEvent;
-import com.meli.charge.api.response.TotalChargeInfoResponse;
 import com.meli.charge.api.response.TotalAmountPendingChargeResponse;
+import com.meli.charge.api.response.TotalChargeInfoResponse;
 import com.meli.charge.exception.ChargeAlreadyProcessedException;
 import com.meli.charge.exception.ChargeOutOfDateException;
 import com.meli.charge.exception.ParamMandatoryException;
-import com.meli.charge.exception.PaymentExceedsTotalDebtException;
 import com.meli.charge.model.Charge;
 import com.meli.charge.model.Payment;
 import com.meli.charge.model.to.ChargeTO;
@@ -43,6 +42,13 @@ public class ChargeService {
 	@Autowired
 	private QueueBillService queueBillService;
 
+	@Autowired
+	private QueuePaymentService queuePaymentService;
+
+	@Autowired
+	private PaymentService paymentService;
+
+	
 	/**
 	 * Permite crear un cargo a partir de un evento.
 	 * @param chargeEvt
@@ -62,12 +68,25 @@ public class ChargeService {
 		Double amountInDefCurrency = currencyService.convertToCurrencyDefault(chargeEvt.getCurrency(), chargeEvt.getAmount());
 
 		Charge charge = new Charge(chargeEvt, amountInDefCurrency);
+		
+		List<PaymentTO> paymentsWithAvailableAmount = paymentService.getPaymentsWithAvailableAmount(chargeEvt.getUser_id());
+		Double chargeDebt = charge.getAmountPending();
+		for(PaymentTO paymentTO : paymentsWithAvailableAmount) {
+			if(charge.getAmountPending() > 0) {
+				Double amountPaymentUsed = Math.min(paymentTO.getAvailableAmount(), chargeDebt);
+				charge.payAndRelate(new Payment(paymentTO.getId(), amountPaymentUsed, paymentTO.getUserId()), amountPaymentUsed);
+			}
+		}
 
 		Charge chargePersisted = chargeRepo.insert(charge);
 
 		//se encola el cargo en la cola de facturas
 		queueBillService.enqueueCharge(chargePersisted, null, null);
 
+		//se encola el cargo en la cola de facturas siempre y cuando haya habido pagos con saldo pendiente
+		if(!paymentsWithAvailableAmount.isEmpty()) {
+			queuePaymentService.enqueueCharge(chargePersisted);
+		}
 		return chargePersisted;
 	}
 
@@ -135,11 +154,6 @@ public class ChargeService {
 	 */
 	public List<Charge> payChargesWithPayment(PaymentTO paymentTO) {
 		List<Charge> chargesPersistedList = new ArrayList<Charge>();
-		TotalAmountPendingChargeResponse totalChargeAmountPending = totalChargeAmountPending(paymentTO.getUserId());
-		if(totalChargeAmountPending.getTotalPendingCharge() < paymentTO.getAmount()) {
-			throw new PaymentExceedsTotalDebtException(String.format("El pago con monto '%1$,.2f' excede la deuda del usuario '%2$,.2f'", paymentTO.getAmount(), totalChargeAmountPending.getTotalPendingCharge()));
-		}
-
 		Payment payment = new Payment(paymentTO.getId(), paymentTO.getAmount(), paymentTO.getUserId());
 		for(ChargeTO chargeTO : paymentTO.getCharges()) {
 			Charge charge = chargeRepo.findById(chargeTO.getId()).get();

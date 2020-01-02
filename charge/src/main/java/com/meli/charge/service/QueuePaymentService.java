@@ -1,10 +1,13 @@
 package com.meli.charge.service;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.jms.Queue;
 
+import org.apache.activemq.command.ActiveMQQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,26 +19,25 @@ import com.meli.charge.model.Charge;
 import com.meli.charge.model.Payment;
 
 @Service
-public class QueueBillService {
+public class QueuePaymentService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(QueueBillService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(QueuePaymentService.class);
 	
-	@Autowired
-	private Queue queueBill;
-
 	@Autowired
 	private Gson gson;
 
 	@Autowired
 	private JmsTemplate jmsTemplate;
-	
-	public void enqueueCharge(Charge charge, Payment payment, Double amountToUSe) {
-		ChargeTO chargeTO = new ChargeTO(charge, payment, amountToUSe);
+
+	public void enqueueCharge(Charge charge) {
+		Queue queue = new ActiveMQQueue("payment.queue");
+		
+		ChargeTO chargeTO = new ChargeTO(charge);
 		String chargeStr = gson.toJson(chargeTO);
 	
-		LOGGER.info("Encolando mensaje {} en cola de facturas", chargeStr);
+		LOGGER.info("Encolando mensaje {} en cola de pagos", chargeStr);
 
-		jmsTemplate.convertAndSend(queueBill, chargeStr);
+		jmsTemplate.convertAndSend(queue, chargeStr);
 		
 	}
 
@@ -49,20 +51,24 @@ public class QueueBillService {
 		private Integer userId;
 		private Double amount;
 		private Double amountPending;
+		private String event_type;
+		private String category;
 		private Date dateObj;
-		private String paymentId;
-		private Double paymentAmount;
+		private List<PaymentTO> payments;
 
-		public ChargeTO(Charge charge, Payment payment, Double amountToUSe) {
+		public ChargeTO(Charge charge) {
 			setId(charge.getId());
 			setEvent_id(charge.getEventId());
 			setUserId(charge.getUserId());
 			setAmount(charge.getAmount());
 			setAmountPending(charge.getAmountPending());
 			setDateObj(charge.getDateObj());
-			if(payment != null) {
-				setPaymentId(payment.getId());
-				setPaymentAmount(amountToUSe);
+			setEvent_type(charge.getEvent_type());
+			setCategory(charge.getCategory());
+			//payments
+			setPayments(new ArrayList<PaymentTO>());
+			for(Payment payment : charge.getPayments()) {
+				getPayments().add(new PaymentTO(payment.getId(), payment.getAmount()));
 			}
 		}
 
@@ -114,23 +120,62 @@ public class QueueBillService {
 			this.dateObj = dateObj;
 		}
 
-		public String getPaymentId() {
-			return paymentId;
+		public List<PaymentTO> getPayments() {
+			return payments;
 		}
 
-		public void setPaymentId(String paymentId) {
-			this.paymentId = paymentId;
+		public void setPayments(List<PaymentTO> payments) {
+			this.payments = payments;
 		}
 
-		public Double getPaymentAmount() {
-			return paymentAmount;
+		public String getEvent_type() {
+			return event_type;
 		}
 
-		public void setPaymentAmount(Double paymentAmount) {
-			this.paymentAmount = paymentAmount;
+		public void setEvent_type(String event_type) {
+			this.event_type = event_type;
+		}
+
+		public String getCategory() {
+			return category;
+		}
+
+		public void setCategory(String category) {
+			this.category = category;
 		}
 		
+	}
+
+	@SuppressWarnings("unused")
+	private static class PaymentTO implements Serializable {
 		
+		private static final long serialVersionUID = -6982138288658285496L;
+
+		private String id;
+		private Double amountUsed;
+
+		public PaymentTO(String id, Double amountUsed) {
+			super();
+			this.id = id;
+			this.amountUsed = amountUsed;
+		}
+		
+		public String getId() {
+			return id;
+		}
+
+		public void setId(String id) {
+			this.id = id;
+		}
+		
+		public Double getAmountUsed() {
+			return amountUsed;
+		}
+
+		public void setAmountUsed(Double amountUsed) {
+			this.amountUsed = amountUsed;
+		}
+
 	}
 
 }
