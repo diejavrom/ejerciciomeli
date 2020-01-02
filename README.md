@@ -78,6 +78,10 @@ A continuación se muestra un diagrama donde se visualizan las interacciones de 
 <br>java -jar target/status-0.0.1-SNAPSHOT.jar
 <br>la API quedará expuesta en http://localhost:8380/status
 
+# Solución con saldo a favor (Bonus 1):
+
+Ver branch v2.
+
 # Solución Cloud (Bonus 2):
 
 Para la solución cloud se utilizó Azure cloud. Cada aplicación se ejecuta dentro de un contenedor Docker con el perfil "cloud", 
