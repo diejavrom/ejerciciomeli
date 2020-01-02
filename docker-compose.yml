@@ -14,7 +14,7 @@ services:
       - "currency:currency"
       - "status:status"
   payment:
-    image: testdjr.azurecr.io/meli/payment:0.0.1
+    image: testdjr.azurecr.io/meli/payment:0.0.2
     ports:
       - "8080:8080"
     networks:
@@ -24,7 +24,7 @@ services:
       - "charge:charge"
       - "currency:currency"
   charge:
-    image: testdjr.azurecr.io/meli/charge:0.0.1
+    image: testdjr.azurecr.io/meli/charge:0.0.2
     ports:
       - "8180:8180"
     networks:
@@ -32,6 +32,7 @@ services:
     links:
       - "activemqcontainer:activemqcontainer"
       - "currency:currency"
+      - "payment:payment"
   bill:
     image: testdjr.azurecr.io/meli/bill:0.0.1
     ports:
