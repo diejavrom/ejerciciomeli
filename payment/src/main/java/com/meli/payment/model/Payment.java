@@ -9,6 +9,9 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import com.meli.payment.api.request.PaymentEvent;
 
+/**
+ * Representa un pago.
+ */
 @Document(collection = "payments")
 public class Payment implements Serializable {
 

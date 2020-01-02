@@ -2,12 +2,15 @@ package com.meli.status.model;
 
 import java.util.Date;
 
+/**
+ * Representa el resumen de pagos provisto por la aplicación payment.
+ */
 public class TotalPaymentInfoTO {
 
 	private Integer userId;
-	private Double totalPayment;
-	private Date lastPayment;
-	private Integer paymentCount;
+	private Double totalPayment; // monto total de pagos
+	private Date lastPayment; // decha del último pago
+	private Integer paymentCount; //total de pagos
 
 	public TotalPaymentInfoTO() {
 	}

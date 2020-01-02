@@ -2,12 +2,15 @@ package com.meli.status.model;
 
 import java.util.Date;
 
+/**
+ * Representa el resumen de cargos provisto por la aplicación charge.
+ */
 public class TotalChargeInfoTO {
 
 	private Integer userId;
-	private Double totalCharge;
-	private Date lastCharge;
-	private Integer chargesCount;
+	private Double totalCharge; //monto total de cargos
+	private Date lastCharge; // fecha del último cargo
+	private Integer chargesCount; // cantidad de cargos
 
 	public TotalChargeInfoTO() {
 	}

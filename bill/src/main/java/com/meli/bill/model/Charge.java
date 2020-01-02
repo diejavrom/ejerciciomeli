@@ -9,6 +9,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.meli.bill.model.to.ChargeTO;
 
+/**
+ * Representa un cargo de una factura
+ */
 @Document(collection = "charges")
 public class Charge {
 

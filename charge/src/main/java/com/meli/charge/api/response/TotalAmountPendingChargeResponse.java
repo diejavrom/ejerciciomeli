@@ -1,9 +1,12 @@
 package com.meli.charge.api.response;
 
+/**
+ * Respuesta del servicip sobre el resumen de cargos pendientes de un usuario.
+ */
 public class TotalAmountPendingChargeResponse {
 
 	private Integer userId;
-	private Double totalPendingCharge;
+	private Double totalPendingCharge; //total de cargos pendientes
 
 	public TotalAmountPendingChargeResponse(Integer userId, Double totalPendingCharge) {
 		super();

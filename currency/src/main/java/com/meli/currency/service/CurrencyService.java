@@ -21,20 +21,26 @@ public class CurrencyService {
 	@Autowired
 	private CurrencyConversionRepository currencyRepo;
 
-	public Double convertToCurrencyDefault(String name, Double amount) {
+	/**
+	 * Convierte el monto <code>amount</code> en una moneda <code>currency</code> en la moneda default.
+	 * @param currency
+	 * @param amount
+	 * @return el monto convertido en la moneda default
+	 */
+	public Double convertToCurrencyDefault(String currency, Double amount) {
 
-		checkParams(name, amount);
+		checkParams(currency, amount);
 
 		Timestamp now = DateHelper.getInstance().getNow();
 		CurrencyConversion ccDefault = getCurrencyDefault(now);
 
-		if(ccDefault.getName().equals(name)) {
+		if(ccDefault.getName().equals(currency)) {
 
-			LOGGER.info("Param en currency default {}", (name + " " + amount));
+			LOGGER.info("Param en currency default {}", (currency + " " + amount));
 
 			return amount;
 		} else {
-			List<CurrencyConversion> currencyConversionList = currencyRepo.findByName(name);
+			List<CurrencyConversion> currencyConversionList = currencyRepo.findByName(currency);
 			CurrencyConversion ccCurrent = null;
 			for(CurrencyConversion cc : currencyConversionList) {
 				if(cc.isBetween(now)) {
@@ -43,11 +49,11 @@ public class CurrencyService {
 				}
 			}
 			if(ccCurrent == null) {
-				throw new CurrencyConfigurationNotFoundException(String.format("No se encontró una configuración vigente para currency '%s'", name));
+				throw new CurrencyConfigurationNotFoundException(String.format("No se encontró una configuración vigente para currency '%s'", currency));
 			} else {
 				Double result = ccCurrent.convert(amount);
 				
-				LOGGER.info("Convirtiendo {} -> {} ", (name + " " + amount), (result + " " + ccDefault.getName()));
+				LOGGER.info("Convirtiendo {} -> {} ", (currency + " " + amount), (result + " " + ccDefault.getName()));
 
 				return result;
 			}
@@ -55,6 +61,11 @@ public class CurrencyService {
 
 	}
 
+	/**
+	 * devuelve la configuración para la moneda default
+	 * @param now
+	 * @return la configuración default
+	 */
 	private CurrencyConversion getCurrencyDefault(Timestamp now) {
 		List<CurrencyConversion> allDefaults = currencyRepo.findByDef(true);
 		CurrencyConversion ccDefault = null;

@@ -26,6 +26,9 @@ import com.meli.charge.model.to.ChargeTO;
 import com.meli.charge.model.to.PaymentTO;
 import com.meli.charge.repository.ChargeRepository;
 
+/**
+ * Servicio principal de gestión de cargos.
+ */
 @Service
 public class ChargeService {
 
@@ -40,20 +43,29 @@ public class ChargeService {
 	@Autowired
 	private QueueBillService queueBillService;
 
+	/**
+	 * Permite crear un cargo a partir de un evento.
+	 * @param chargeEvt
+	 * @return el cargo creado
+	 */
 	public Charge createCharge(ChargeEvent chargeEvt) {
 
 		LOGGER.info("Procesando cargo para el usuario -> {},  event_id -> {}, currency -> {}, amount -> {} ", chargeEvt.getUser_id(), chargeEvt.getEvent_id(), chargeEvt.getCurrency(), chargeEvt.getAmount());
 
+		//chequeo parámetros + unicidad del evento de cargo
 		checkEventCharge(chargeEvt);
 
+		//chequeo de cargo dentro del mes
 		checkEventChargeOutOfDate(chargeEvt);
 	
+		//conversión a moneda default si fuese necesario
 		Double amountInDefCurrency = currencyService.convertToCurrencyDefault(chargeEvt.getCurrency(), chargeEvt.getAmount());
 
 		Charge charge = new Charge(chargeEvt, amountInDefCurrency);
 
 		Charge chargePersisted = chargeRepo.insert(charge);
 
+		//se encola el cargo en la cola de facturas
 		queueBillService.enqueueCharge(chargePersisted, null, null);
 
 		return chargePersisted;
@@ -87,6 +99,10 @@ public class ChargeService {
 		}
 	}
 
+	/**
+	 * Verifica que el evento de cargo esté dentro del mes en curso
+	 * @param evento
+	 */
 	private void checkEventChargeOutOfDate(ChargeEvent evento) {
 		Timestamp dateEvento = DateHelper.getInstance().stringToTimestamp(evento.getDate());
 		Timestamp now = DateHelper.getInstance().getNow();
@@ -101,10 +117,22 @@ public class ChargeService {
 		}
 	}
 
+	/**
+	 * Obtiene todos los cargos de un usuario
+	 * @param user_id
+	 * @return todos los cargos de un usuario
+	 */
 	public List<Charge> listByUserId(Integer user_id) {
+		LOGGER.info("obteniendo lista de cargos del usuario {}", user_id);
 		return chargeRepo.findByUserId(user_id);
 	}
 
+	/**
+	 * Recibe la notificación de un pago ingresado en la cola de cargos. Actualiza el estado de deuda de cada cargo saldado con el pago ingresado.
+	 * Por cada cargo actualizado se notifica a la cola de facturas. 
+	 * @param paymentTO
+	 * @return la lista de cargos afectados por el pago
+	 */
 	public List<Charge> payChargesWithPayment(PaymentTO paymentTO) {
 		List<Charge> chargesPersistedList = new ArrayList<Charge>();
 		TotalAmountPendingChargeResponse totalChargeAmountPending = totalChargeAmountPending(paymentTO.getUserId());
@@ -124,7 +152,15 @@ public class ChargeService {
 		return chargesPersistedList;
 	}
 
+	/**
+	 * Obtiene el resumen de los cargos de un usuario.
+	 * @param user_id
+	 * @return el resumen de los cargos de un usuario
+	 */
 	public TotalChargeInfoResponse totalChargeInfo(Integer user_id) {
+
+		LOGGER.info("obteniendo resumen de cargos del usuario {}", user_id);
+		
 		List<Charge> allCharge = chargeRepo.findByUserId(user_id);
 		double totalCharge = 0d;
 		Date lastCharge = null;
@@ -135,7 +171,15 @@ public class ChargeService {
 		return new TotalChargeInfoResponse(user_id, totalCharge, lastCharge, allCharge.size());
 	}
 
+	/**
+	 * Obtiene el resumen de los cargos con deuda de un usuario.
+	 * @param user_id
+	 * @return el resumen de los cargos con deuda de un usuario
+	 */
 	public TotalAmountPendingChargeResponse totalChargeAmountPending(Integer user_id) {
+		
+		LOGGER.info("obteniendo resumen de cargos con deuda del usuario {}", user_id);
+
 		List<Charge> allCharge = findAllWithDebtSorted(user_id);
 		double totalCharge = 0d;
 		if(!allCharge.isEmpty()) {
@@ -148,7 +192,13 @@ public class ChargeService {
 		return chargeRepo.findAllWithDebt(user_id, Sort.by(Direction.ASC, "dateObj"));
 	}
 
+	/**
+	 * Obtiene todos los cargos pendientes de saldar de un usuario
+	 * @param user_id
+	 * @return la lista de cargos pendientes de pagar
+	 */
 	public List<Charge> listPendingByUserId(Integer user_id) {
+		LOGGER.info("obteniendo lista de cargos con deuda del usuario {}", user_id);
 		return findAllWithDebtSorted(user_id);
 	}
 

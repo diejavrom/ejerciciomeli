@@ -2,12 +2,15 @@ package com.meli.payment.api.reponse;
 
 import java.util.Date;
 
+/**
+ * Representa la respuesta del resumen de pagos realizados por un usuario. 
+ */
 public class TotalPaymentResponse {
 
 	private Integer userId;
-	private Double totalPayment;
-	private Date lastPayment;
-	private Integer paymentCount;
+	private Double totalPayment; //monto total de pagos realizados
+	private Date lastPayment; //último pago realizado
+	private Integer paymentCount; // cantidad de pagos realizados
 
 	public TotalPaymentResponse(Integer userId, Double totalPayment, Date lastPayment, Integer paymentCount) {
 		super();

@@ -2,6 +2,10 @@ package com.meli.charge.model;
 
 import java.io.Serializable;
 
+/**
+ * Representa un pago realizado a un cargo.
+ *
+ */
 public class Payment implements Serializable {
 
 	private static final long serialVersionUID = -8929567302784045440L;

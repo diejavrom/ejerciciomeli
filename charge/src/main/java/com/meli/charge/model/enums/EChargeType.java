@@ -3,6 +3,9 @@ package com.meli.charge.model.enums;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Tipo de cargos
+ */
 public enum EChargeType {
 
 	CLASIFICADO("CLASIFICADO", EChargeCategory.MARKETPLACE), VENTA("VENTA", EChargeCategory.MARKETPLACE),

@@ -8,16 +8,19 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.meli.currency.exception.ParamMandatoryException;
 
+/**
+ * Configuración del valor de una moneda. 
+ */
 @Document(collection = "currency")
 public class CurrencyConversion {
 
 	private String id;
-	private Date since;
-	private Date until;
-	private Double conversionFactor;
-	private String name;
-	private String description;
-	private Boolean def; // default
+	private Date since; //fecha desde
+	private Date until; // fecha hasta, puede ser null
+	private Double conversionFactor; //factor de conversión con respecto a la moneda default
+	private String name; // nombre de la moneda
+	private String description; //descrión
+	private Boolean def; // flag que indica si la moneda es la default del sistema
 
 	public CurrencyConversion() {
 	}

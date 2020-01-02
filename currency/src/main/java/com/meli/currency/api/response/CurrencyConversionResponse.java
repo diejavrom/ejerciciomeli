@@ -1,11 +1,14 @@
 package com.meli.currency.api.response;
 
+/**
+ * Representa el resultado de una conversión
+ */
 public class CurrencyConversionResponse {
 
-	private String from;
-	private Double amountTo;
-	private Double amountFrom;
-	
+	private String from; //currency origen
+	private Double amountFrom; //monto convertido
+	private Double amountTo; //monto convertido a la moneda default
+
 	public CurrencyConversionResponse() {
 	}
 	

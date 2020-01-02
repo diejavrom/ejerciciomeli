@@ -1,9 +1,17 @@
 package com.meli.payment.api.request;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
+/**
+ * Representa el evento de un pago realizado 
+ */
 public class PaymentEvent {
 
+    @Schema(description = "indica el monto abonado con dos decimales", example = "150.10", required = true)	
 	private Double amount;
+    @Schema(description = "indica la moneda del monto", example = "ARS", required = true)	
 	private String currency;
+    @Schema(description = "indica el número de usuario", example = "1", required = true)	
 	private Integer user_id;
 
 	public PaymentEvent() {

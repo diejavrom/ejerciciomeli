@@ -2,12 +2,16 @@ package com.meli.charge.api.response;
 
 import java.util.Date;
 
+/**
+ * Respuesta del servicip sobre el resumen de cargos de un usuario.
+ *
+ */
 public class TotalChargeInfoResponse {
 
 	private Integer userId;
-	private Double totalCharge;
-	private Date lastCharge;
-	private Integer chargesCount;
+	private Double totalCharge; //monto total de cargos
+	private Date lastCharge; //decha del último cargo
+	private Integer chargesCount; // cantidad total de cargos
 
 	public TotalChargeInfoResponse(Integer userId, Double totalCharge, Date lastCharge, Integer chargesCount) {
 		super();

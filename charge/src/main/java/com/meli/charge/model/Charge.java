@@ -13,6 +13,9 @@ import com.meli.charge.api.request.ChargeEvent;
 import com.meli.charge.exception.ChargeTypeException;
 import com.meli.charge.model.enums.EChargeType;
 
+/**
+ * Representa un cargo 
+ */
 @Document(collection = "charges")
 public class Charge {
 
@@ -34,6 +37,11 @@ public class Charge {
 		this.payments = new ArrayList<Payment>();
 	}
 
+	/**
+	 * Construye un cargo con el evento que lo dio origen y con un monto en la moneda default.
+	 * @param chargeEvt
+	 * @param amountInDefCurrency
+	 */
 	public Charge(ChargeEvent chargeEvt, Double amountInDefCurrency) {
 		this();
 		setEventId(chargeEvt.getEvent_id());
@@ -149,6 +157,12 @@ public class Charge {
 		this.category = category;
 	}
 
+	/**
+	 * Descuenta <code>amount</code> del salgo pendiente del cargo y agrega
+	 * <code>pago</code> a la lista de pagos relacionados
+	 * @param pago
+	 * @param amount
+	 */
 	public void payAndRelate(Payment pago, Double amount) {
 		if(getAmountPending() < amount) {
 			throw new IllegalArgumentException(String.format("El monto del cargo % por saldar es menor al monto recibido por descontar %", getAmountPending(), pago.getAmount()));

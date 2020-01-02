@@ -5,19 +5,20 @@ import java.util.Date;
 import com.meli.status.model.TotalChargeInfoTO;
 import com.meli.status.model.TotalPaymentInfoTO;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-
-@Schema
+/**
+ * Representa el estado de deuda del usuario brindando además un resumen
+ * de los pagos y cargos.
+ */
 public class StatusUsuarioResponse {
 
 	private Integer userId;
-	private Integer totalCharge;
-	private Double amountTotalCharge;
-	private Date lastCharge;
-	private Integer totalPayment;
-	private Double amountTotalPayment;
-	private Date lastPayment;
-	private Double debt;
+	private Integer totalCharge; //cantidad de cargos del usuario
+	private Double amountTotalCharge; // monto total de cargos
+	private Date lastCharge; // fecha del último cargo ingresado
+	private Integer totalPayment; // cantidad de pagos del usuario
+	private Double amountTotalPayment; // monto total de pagos
+	private Date lastPayment; // fecha del último pago realizado
+	private Double debt; // monto de la deuda
 
 	public StatusUsuarioResponse(Integer userId, TotalChargeInfoTO totalInfoCharge, TotalPaymentInfoTO totalPaymentInfo) {
 		setUserId(userId);

@@ -1,12 +1,20 @@
 package com.meli.charge.api.request;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 public class ChargeEvent {
 
+    @Schema(description = "indica el id del evento", example = "1", required = true)	
 	private Integer event_id;
+    @Schema(description = "indica el número de usuario", example = "1", required = true)	
 	private Integer user_id;
+	@Schema(description = "indica el monto a cobrar, con dos decimales", example = "150.10", required = true)	
 	private Double amount;
+	@Schema(description = "indica el tipo de evento", example = "CLASIFICADO", required = true)	
 	private String event_type;
+	@Schema(description = "indica la feha y hora en la que ocurrió el evento", example = "2019-05-16T00:00:00", required = true)	
 	private String date;
+	@Schema(description = "indica la moneda", example = "ARS", required = true)	
 	private String currency;
 
 	public ChargeEvent() {

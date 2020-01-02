@@ -3,6 +3,10 @@ package com.meli.bill.model.to;
 import java.io.Serializable;
 import java.util.Date;
 
+/**
+ * Representa una notificación de un cargo nuevo ingresado
+ * o bien una actualización de pago del mismo.
+ */
 public class ChargeTO implements Serializable {
 
 	private static final long serialVersionUID = 2435817384119643650L;

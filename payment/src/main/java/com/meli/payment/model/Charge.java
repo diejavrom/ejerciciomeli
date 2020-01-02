@@ -2,6 +2,9 @@ package com.meli.payment.model;
 
 import com.meli.payment.model.to.ChargeTO;
 
+/**
+ * Representa un cargo relacionado a un pago.
+ */
 public class Charge {
 
 	private String id;

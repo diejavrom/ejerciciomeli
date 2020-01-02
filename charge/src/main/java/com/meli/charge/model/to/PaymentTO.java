@@ -4,6 +4,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Representa un pago recibido desde la cola de eventos
+ * "charge.queue". El mismo posee que cargos (<code>ChargeTO</code>) fueron pagados 
+ * con el monto de dicho pago.
+ */
 public class PaymentTO implements Serializable {
 
 	private static final long serialVersionUID = 3835443690263526093L;

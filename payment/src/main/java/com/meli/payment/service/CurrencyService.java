@@ -10,6 +10,9 @@ import org.springframework.web.client.RestTemplate;
 
 import com.meli.payment.model.to.CurrencyConversionTO;
 
+/**
+ * Servicio para comunicarse con la aplicación currency 
+ */
 @Service
 public class CurrencyService {
 
@@ -23,14 +26,20 @@ public class CurrencyService {
 	@Autowired
 	private RestTemplate restTemplate;
 
-	public Double convertToCurrencyDefault(String name, Double amount) {
-		String urlCurrencyPayment = String.format("%s/convert/%s/%s", env.getProperty(URL_CURRENCY_SERVICE), name, amount);
+	/**
+	 * Convierte el monto <code>amount</code> en la moneda <code>currency</code> a la moneda default invocando a la api de la aplicación currency.
+	 * @param currency
+	 * @param amount
+	 * return <code>amount/<code> convertido a la moneda default 
+	 */
+	public Double convertToCurrencyDefault(String currency, Double amount) {
+		String urlCurrencyPayment = String.format("%s/convert/%s/%s", env.getProperty(URL_CURRENCY_SERVICE), currency, amount);
 
 		LOGGER.info("Invocando API {} ", urlCurrencyPayment);
 		
 		ResponseEntity<CurrencyConversionTO> forEntity = restTemplate.getForEntity(urlCurrencyPayment, CurrencyConversionTO.class);
-		CurrencyConversionTO totalDebt = forEntity.getBody();
-		return totalDebt.getAmountTo();
+		CurrencyConversionTO ccTO = forEntity.getBody();
+		return ccTO.getAmountTo();
 	}
 	
 }

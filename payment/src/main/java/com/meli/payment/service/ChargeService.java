@@ -13,6 +13,9 @@ import org.springframework.web.client.RestTemplate;
 
 import com.meli.payment.model.to.ChargeTO;
 
+/**
+ * Servicio para comunicarse con la aplicación charge
+ */
 @Service
 public class ChargeService {
 
@@ -26,6 +29,11 @@ public class ChargeService {
 	@Autowired
 	private RestTemplate restTemplate;
 
+	/**
+	 * Obtiene los cargos con deuda invocando a la api de la aplicación charge
+	 * @param userId
+	 * @return los cargos con deuda
+	 */
 	public List<ChargeTO> getPendingCharges(Integer userId) {
 		String urlChargePendingAPI = String.format("%s/listpending/%d", env.getProperty(URL_CHARGE_SERVICE), userId);
 
