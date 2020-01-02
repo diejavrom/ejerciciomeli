@@ -27,8 +27,8 @@ import org.springframework.test.context.ContextConfiguration;
 
 import com.meli.charge.DateHelper;
 import com.meli.charge.api.request.ChargeEvent;
-import com.meli.charge.api.response.TotalChargeInfoResponse;
 import com.meli.charge.api.response.TotalAmountPendingChargeResponse;
+import com.meli.charge.api.response.TotalChargeInfoResponse;
 import com.meli.charge.exception.ChargeOutOfDateException;
 import com.meli.charge.exception.PaymentExceedsTotalDebtException;
 import com.meli.charge.model.Charge;
@@ -72,7 +72,7 @@ public class ChargeServiceTest {
 		ChargeEvent chargeEvt = new BuilderEvtCharge()
 			.withAmount(amount)
 		    .withCurrency(currency)
-		    .withDate("2019-12-16T03:00:00.000+0000")
+		    .withDate(getNowStr())
 		    .withEvent_id(event_id)
 		    .withUserId(userId)
 		    .withEvent_type(eventType)
@@ -137,7 +137,7 @@ public class ChargeServiceTest {
 		ChargeEvent chargeEvt = new BuilderEvtCharge()
 				.withAmount(amount - 10)
 			    .withCurrency(currency)
-			    .withDate("2019-12-16T03:00:00.000+0000")
+			    .withDate(getNowStr())
 			    .withEvent_id(event_id)
 			    .withUserId(userId)
 			    .withEvent_type(eventType)
@@ -172,7 +172,7 @@ public class ChargeServiceTest {
 		ChargeEvent chargeEvt = new BuilderEvtCharge()
 				.withAmount(2*amount)
 			    .withCurrency(currency)
-			    .withDate("2019-12-16T03:00:00.000+0000")
+			    .withDate(getNowStr())
 			    .withEvent_id(event_id)
 			    .withUserId(userId)
 			    .withEvent_type(eventType)
@@ -207,7 +207,7 @@ public class ChargeServiceTest {
 		ChargeEvent chargeEvt = new BuilderEvtCharge()
 				.withAmount(2*amount)
 			    .withCurrency(currency)
-			    .withDate("2019-12-16T03:00:00.000+0000")
+			    .withDate(getNowStr())
 			    .withEvent_id(event_id)
 			    .withUserId(userId)
 			    .withEvent_type(eventType)
@@ -221,7 +221,7 @@ public class ChargeServiceTest {
 		chargeEvt = new BuilderEvtCharge()
 				.withAmount(2*amount)
 			    .withCurrency(currency)
-			    .withDate("2019-12-18T03:00:00.000+0000")
+			    .withDate(getNowStr())
 			    .withEvent_id(event_id)
 			    .withUserId(userId)
 			    .withEvent_type(eventType)
@@ -253,7 +253,7 @@ public class ChargeServiceTest {
 		ChargeEvent chargeEvt = new BuilderEvtCharge()
 				.withAmount(2*amount)
 			    .withCurrency(currency)
-			    .withDate("2019-12-16T03:00:00.000+0000")
+			    .withDate(getNowStr())
 			    .withEvent_id(event_id)
 			    .withUserId(userId)
 			    .withEvent_type(eventType)
@@ -266,7 +266,7 @@ public class ChargeServiceTest {
 		chargeEvt = new BuilderEvtCharge()
 				.withAmount(2*amount)
 			    .withCurrency(currency)
-			    .withDate("2019-12-18T03:00:00.000+0000")
+			    .withDate(getNowStr())
 			    .withEvent_id(event_id)
 			    .withUserId(userId)
 			    .withEvent_type(eventType)
@@ -339,5 +339,9 @@ public class ChargeServiceTest {
 			return ce;
 		}
 		
+	}
+
+	private String getNowStr() {
+		return DateHelper.getInstance().dateToString(DateHelper.getInstance().getNow());
 	}
 }
