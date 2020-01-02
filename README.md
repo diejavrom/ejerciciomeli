@@ -2,7 +2,7 @@
 
 # componentes del sistema + documentación de las APIs:
 
-* aplicación charge:
+* aplicación [charge](https://github.com/diejavrom/ejerciciomeli/tree/master/charge):
 
 Gestión de cargos. A través de esta aplicación se pueden ingresar y consultar cargos. Cada cargo estará relacionado con los pagos
 que se utilizaron para saldarlo. Almacena los datos en una base de datos MongoDB en memoria. Cada vez que se ingresa un cargo el mismo
@@ -10,24 +10,24 @@ es notificado a una cola de eventos (bill.queue) que luego será consumido por l
 Además, posee un listener (implementado en JMS) que recibe los pagos notificados en la cola de eventos por la aplicación payment.
 <br>Documentación de la API en https://meli-multi2.azurewebsites.net/charge/doc/charge-api.html
 
-* aplicación payment:
+* aplicación [payment](https://github.com/diejavrom/ejerciciomeli/tree/master/payment):
 
 Gestión de pagos. Mediante esta aplicación se pueden ingresar y consultar pagos. Cada pago está relacionado con los cargos que fueron
 saldados con dicho pago. Los datos se almacenan en una base de datos MongoDB. Cada vez que se ingresa un pago, el mismo, luego de procesado, es notificado a una cola de eventos (charge.queue) para luego ser consumido por la aplicación charge.
 Al momento de crear un pago se exige una clave de idempotencia (idempkey) en el http header. Si esa clave no está presente o bien se envia repetida, el pago será rechazado. Con esto se garantiza la unicidad de los pagos.
 <br>Documentación de la API en https://meli-multi2.azurewebsites.net/payment/doc/payment-api.html
 
-* aplicación bill:
+* aplicación [bill](https://github.com/diejavrom/ejerciciomeli/tree/master/bill):
 
 A través de esta aplicación se pueden recuperar las facturas. En cada factura se informan los cargos que la componen. También utiliza una base de datos MongoDB en memoria. Posee un listener que recibe los cargos ingresados desde una cola de eventos.
 <br>Documentación de la API en https://meli-multi2.azurewebsites.net/bill/doc/bill-api.html
 
-* aplicación status
+* aplicación [status](https://github.com/diejavrom/ejerciciomeli/tree/master/status)
 
 Permite consultar el estado de deuda del usuario obteniendo la información de las aplicaciones charge y payment. No posee almacenamiento.
 <br>Documentación de la API en https://meli-multi2.azurewebsites.net/status/doc/status-api.html
 
-* aplicación currency
+* aplicación [currency](https://github.com/diejavrom/ejerciciomeli/tree/master/currency)
 
 Almacena la configuración de los tipos de moneda que se manejan en el sistema. En esta aplicación además de establecer cuál es la moneda 
 por default también permite convertir cualquier importe (configurado) a la moneda por defecto. A efectos de la prueba, 
@@ -85,7 +85,7 @@ Ver branch v2.
 # Solución Cloud (Bonus 2):
 
 Para la solución cloud se utilizó Azure cloud. Cada aplicación se ejecuta dentro de un contenedor Docker con el perfil "cloud", 
-la cola de eventos activemq también corre sobre un contenedor. Además, a diferencia de la solución local, se dispone de un contenedor nginx que funciona como un reverse proxy redireccionando los endpoints hacia los otros contenedores en base a las URLs recibidas.
+la cola de eventos activemq también corre sobre un contenedor. Además, a diferencia de la solución local, se dispone de un contenedor [nginx](https://github.com/diejavrom/ejerciciomeli/tree/master/nginx) que funciona como un reverse proxy redireccionando los endpoints hacia los otros contenedores en base a las URLs recibidas.
 <br>El deploy y la relación de contenedores se realiza mediante el archivo docker-compose.yml, de esta manera todos quedan
 ejecutándose dentro de un mismo host.
 <br>Para construir la imagen de cada conteneder se provee un archivo Dockerfile que reside en el path raíz de cada proyecto.
