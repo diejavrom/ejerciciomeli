@@ -31,7 +31,7 @@ public class BillRestController {
 
     @RequestMapping(value = "/{user_id}", method = RequestMethod.GET)
     @Operation(
-    		summary = "Obtiene todas las facturas del usuario. Cada factura muestra los cargos asociados",
+    		summary = "Obtiene todas las facturas de un usuario",
     		responses = {
     			@ApiResponse(description = "la lista de facturas", responseCode = "200",
     				content = @Content (
@@ -58,7 +58,7 @@ public class BillRestController {
 
     @RequestMapping(value = "/list/{user_id}", method = RequestMethod.GET)
     @Operation(
-    		summary = "Obtiene todas las facturas del usuario dentro de un periodo {mes/año}-desde y {mes/año}-hasta",
+    		summary = "Obtiene todas las facturas de un usuario dentro de un periodo {mes/año}-desde y {mes/año}-hasta",
     		responses = {
     			@ApiResponse(description = "la lista de facturas filtrada por rango", responseCode = "200",
     				content = @Content (

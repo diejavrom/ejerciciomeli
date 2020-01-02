@@ -17,4 +17,7 @@ public interface BillRepository extends MongoRepository<Bill, String> {
 	@Query("{ $and: [ {userId : ?0}, { $or:[{year:{$gt:?2}}, { $and:[{year:{$eq:?2}}, {month:{$gte:?1}}]} ]}, {$or:[{year:{$lt:?4}}, {$and:[ { year:{$eq:?4}},{month:{$lte:?3} } ]}]}]}")
 	public List<Bill> findByUserIdAndRange(Integer userId, Integer monthFrom, Integer yearFrom, Integer monthTo, Integer yearTo);
 
+	@Query("{ $and: [  {userId : ?0}, { $or:[{year:{$gt:?2}}, { $and:[{year:{$eq:?2}}, {month:{$gte:?1}}]} ]}, {$or:[{year:{$lt:?4}}, {$and:[ { year:{$eq:?4}},{month:{$lte:?3} } ]}]}]}")
+	public List<Bill> findWithPendingAmountByUserIdAndRange(Integer userId, Integer monthFrom, Integer yearFrom, Integer monthTo, Integer yearTo);
+
 }

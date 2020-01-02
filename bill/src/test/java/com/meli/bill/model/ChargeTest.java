@@ -23,8 +23,8 @@ public class ChargeTest {
 
 		c.updateWithChargeTOInfo(chargeTO);
 
-		Assert.assertTrue(c.getInfoPaymentById(idPayment) != null);
-		Assert.assertTrue(c.getInfoPaymentById("12345") == null);
+		Assert.assertNotNull(c.getInfoPaymentById(idPayment));
+		Assert.assertNull(c.getInfoPaymentById("12345"));
 	}
 
 	@Test

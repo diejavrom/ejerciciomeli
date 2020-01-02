@@ -66,6 +66,8 @@ public class BillService {
 
 	public List<Bill> getBillsByUserIdAndRange(Integer userId, Integer monthFrom, Integer yearFrom, Integer monthTo, Integer yearTo) {
 
+		LOGGER.info("Obteniendo todas las facturas para el usuario {} en el rango {}/{} - {}/{}", userId, monthFrom, yearFrom, monthTo, yearTo);
+
 		checkParams(userId, monthFrom, yearFrom, monthTo, yearTo);
 
 		return billRepo.findByUserIdAndRange(userId, monthFrom, yearFrom, monthTo, yearTo);

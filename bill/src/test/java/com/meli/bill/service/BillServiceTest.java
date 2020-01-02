@@ -28,7 +28,6 @@ import com.meli.bill.model.Charge;
 import com.meli.bill.model.to.ChargeTO;
 import com.meli.bill.repository.BillRepository;
 
-
 @RunWith(MockitoJUnitRunner.class)
 @ContextConfiguration(classes = BillService.class)
 public class BillServiceTest {
@@ -163,7 +162,5 @@ public class BillServiceTest {
 	public void testAddChargeWithNullParam() {
 		billService.receiveCharge(null);
 	}
-
-	//TODO: test getBillsByUserIdAndRange
 
 }

@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.meli.charge.api.request.ChargeEvent;
 import com.meli.charge.api.response.ErrorResponse;
-import com.meli.charge.api.response.TotalChargeInfoResponse;
 import com.meli.charge.api.response.TotalAmountPendingChargeResponse;
+import com.meli.charge.api.response.TotalChargeInfoResponse;
 import com.meli.charge.model.Charge;
 import com.meli.charge.service.ChargeService;
 
@@ -46,7 +46,7 @@ public class ChargeRestController {
     			@ApiResponse(responseCode = "500", description = "ante un error inesperado")
     		}
     )
-    public ResponseEntity<Charge> crear(@Valid @RequestBody ChargeEvent chargeEvt) {
+    public ResponseEntity<Charge> createCharge(@Valid @RequestBody ChargeEvent chargeEvt) {
     	Charge charge = chargeService.createCharge(chargeEvt);
     	return new ResponseEntity<Charge>(charge, HttpStatus.OK);
     }
