@@ -8,5 +8,5 @@ Los cambios más relevantes de esta solución con respecto al branch master son 
 * En la aplicación charge, al momento de ingresar un cargo, se buscan los pagos con monto disponible y se actualiza ese cargo con los pagos que pueden saldar el mismo. Luego de esto se envia la información en una cola de pagos (payment.charge). 
 * A continuación se muestra el diagrama de arquitectura modificado donde se puede ver este último punto
 
-![alt text](https://github.com/diejavrom/ejerciciomeli/blob/master/melisystem.png)
+![alt text](https://github.com/diejavrom/ejerciciomeli/blob/v2/melisystem.png)
 
