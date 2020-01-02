@@ -76,7 +76,7 @@ public class PaymentRestController {
     		responses = {
     			@ApiResponse(description = "la información resumida de los pagos del usuario", responseCode = "200",
     				content = @Content (
-    					schema = @Schema(implementation = Payment.class),
+    					schema = @Schema(implementation = TotalPaymentResponse.class),
     					mediaType = "application/json"
     				)
     			 ),
