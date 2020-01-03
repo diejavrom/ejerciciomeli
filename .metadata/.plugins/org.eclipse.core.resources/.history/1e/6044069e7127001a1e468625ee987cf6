@@ -1,8 +1,0 @@
-package com.meli.bill.model;
-
-public class InfoPayment {
-
-	private String id;
-	private Double amount;
-	
-}

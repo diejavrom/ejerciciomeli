@@ -1,5 +1,0 @@
-package com.meli.charge.configuration;
-
-public class JMSConfig {
-
-}

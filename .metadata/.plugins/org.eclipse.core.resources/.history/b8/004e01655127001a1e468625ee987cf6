@@ -1,5 +1,0 @@
-package com.meli.currency.api;
-
-public class ConversionResponse {
-
-}

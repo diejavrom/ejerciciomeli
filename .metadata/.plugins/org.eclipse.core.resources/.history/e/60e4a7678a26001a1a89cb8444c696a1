@@ -1,5 +1,0 @@
-package com.meli.charge.api.response;
-
-public class TotalDebtResponse {
-
-}
