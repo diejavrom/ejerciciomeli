@@ -1,6 +1,0 @@
-FROM openjdk:8-jdk-alpine
-VOLUME /tmp
-ARG JAR_FILE
-COPY ${JAR_FILE} fcm-platform-final.jar
-COPY run-docker.sh run-docker.sh
-ENTRYPOINT ["sh","run-docker.sh"]

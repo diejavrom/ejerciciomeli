@@ -1,3 +1,0 @@
-spring.activemq.broker-url=vm://embedded?broker.persistent=false,useShutdownHook=false
-spring.activemq.password=admin
-spring.activemq.user=admin
