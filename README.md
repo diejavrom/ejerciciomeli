@@ -87,7 +87,7 @@ Ver branch [v2](https://github.com/diejavrom/ejerciciomeli/tree/v2).
 Para la solución cloud se utilizó Azure cloud. Cada aplicación se ejecuta dentro de un contenedor Docker con el perfil "cloud", 
 la cola de eventos activemq también corre sobre un contenedor. Además, a diferencia de la solución local, se dispone de un contenedor [nginx](https://github.com/diejavrom/ejerciciomeli/tree/master/nginx) que funciona como un reverse proxy redireccionando los endpoints hacia los otros contenedores en base a las URLs recibidas.
 <br>El deploy y la relación de contenedores se realiza mediante el archivo docker-compose.yml, de esta manera todos quedan
-ejecutándose dentro de un mismo host.
+ejecutándose dentro de un mismo host por lo que el ambiente no está preparado para soportar pruebas de carga.
 <br>Para construir la imagen de cada conteneder se provee un archivo Dockerfile que reside en el path raíz de cada proyecto.
 Se utiliza un repositorio de imágenes provisto por Azure Cloud.
 <br>La URL base de esta solución es https://meli-multi2.azurewebsites.net, por lo que los endpoints quedan de la siguiente manera:
