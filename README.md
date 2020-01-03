@@ -14,8 +14,8 @@ Los cambios más relevantes de esta solución con respecto al branch master son 
 
 La ejecución en el entorno local es similar a la versión de master, a excepcion de las aplicaciones charge y payment que se inician como
 
-java -jar target/charge-0.0.2-SNAPSHOT.jar
-java -jar target/payment-0.0.2-SNAPSHOT.jar
+<br>java -jar target/charge-0.0.2-SNAPSHOT.jar
+<br>java -jar target/payment-0.0.2-SNAPSHOT.jar
 
 respectivamente.
 
@@ -23,10 +23,10 @@ respectivamente.
 
 Esta versión también puede ser probada en un ambiente cloud pero teniendo a la url https://app-meli-multi.azurewebsites.net/ como base. De esta manera, la documentación de las APIs se pueden ver en 
 
-https://app-meli-multi.azurewebsites.net/charge/doc/charge-api.html
-https://app-meli-multi.azurewebsites.net/payment/doc/payment-api.html
-https://app-meli-multi.azurewebsites.net/currency/doc/currency-api.html
-https://app-meli-multi.azurewebsites.net/bill/doc/bill-api.html
-https://app-meli-multi.azurewebsites.net/status/doc/status-api.html
+<br>https://app-meli-multi.azurewebsites.net/charge/doc/charge-api.html
+<br>https://app-meli-multi.azurewebsites.net/payment/doc/payment-api.html
+<br>https://app-meli-multi.azurewebsites.net/currency/doc/currency-api.html
+<br>https://app-meli-multi.azurewebsites.net/bill/doc/bill-api.html
+<br>https://app-meli-multi.azurewebsites.net/status/doc/status-api.html
 
 (sólo las 2 primeras difieren de la versión que está en master)
