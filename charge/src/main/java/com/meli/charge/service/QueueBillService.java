@@ -18,7 +18,7 @@ import com.meli.charge.model.Payment;
 @Service
 public class QueueBillService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CurrencyService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(QueueBillService.class);
 	
 	@Autowired
 	private Queue queueBill;
