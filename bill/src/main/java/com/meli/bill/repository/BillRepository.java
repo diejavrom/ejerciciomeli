@@ -5,8 +5,11 @@ import java.util.List;
 import javax.validation.Valid;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
+import org.springframework.stereotype.Repository;
+
 import com.meli.bill.model.Bill;
 
+@Repository
 public interface BillRepository extends MongoRepository<Bill, String> {
 
 	public List<Bill> findByUserId(@Valid Integer user_id);
